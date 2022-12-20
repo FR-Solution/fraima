@@ -23,8 +23,10 @@ func main() {
 	zap.ReplaceGlobals(logger)
 
 	var configFile string
-	flag.StringVar(&configFile, "config-dir", "", "path to dir with configs")
+	flag.StringVar(&configFile, "config", "", "path to dir with configs")
 	flag.Parse()
+
+	// TODO check
 
 	zap.L().Debug("configuration", zap.String("version", Version))
 

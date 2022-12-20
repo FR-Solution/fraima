@@ -1,5 +1,6 @@
 package controller
 
 type configuration struct {
-	extraArgs map[string]any
+	apiVersion string
+	extraArgs  map[string]string
 }

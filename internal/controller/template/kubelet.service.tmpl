@@ -1,17 +1,22 @@
- [Unit]
-      Description=kubelet: The Kubernetes Node Agent
-      Documentation=https://kubernetes.io/docs/home/
-      Wants=network-online.target
-      After=network-online.target
-      
-      [Service]
-      ExecStart=/usr/bin/kubelet \
-      {{ range $key, $value := . }}
-          --{{ $key }}={{ $value }} \
-      {{ end }}
-      Restart=always
-      StartLimitInterval=0
-      RestartSec=10
-      
-      [Install]
-      WantedBy=multi-user.target
+[Unit]
+Description=kubelet: The Kubernetes Node Agent
+Documentation=https://kubernetes.io/docs/home/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/kubelet
+{{- range $key, $value := . -}}
+    {{ " " }}\
+    {{ if eq $value "" }}
+    --{{ $key }}
+    {{ else }}
+    --{{ $key }}={{ $value }} 
+    {{ end }}
+{{- end}}
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
