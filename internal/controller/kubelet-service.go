@@ -3,8 +3,10 @@ package controller
 import (
 	"bytes"
 	_ "embed"
-	"os"
+	"fmt"
 	"text/template"
+
+	"github.com/fraima/fraima/internal/config"
 )
 
 var (
@@ -19,18 +21,28 @@ const (
 )
 
 // createKubletService create kubelet.service file.
-func createKubletService(cfg configuration) error {
+func createKubletService(cfg config.File) error {
+	data, err := createKubleteServiceData(cfg)
+	if err != nil {
+		return err
+	}
+
+	return createFile(kubeletServiceFilePath, data, kubeletServiceFilePERM)
+}
+
+func createKubleteServiceData(cfg config.File) ([]byte, error) {
+	extraArgs := make(map[string]string)
+	if cfg.ExtraArgs != nil {
+		args, ok := cfg.ExtraArgs.(map[any]any)
+		if !ok {
+			return nil, fmt.Errorf("args converting is not available")
+		}
+		for k, v := range args {
+			extraArgs[fmt.Sprint(k)] = fmt.Sprint(v)
+		}
+	}
+
 	kubletServiceBuffer := new(bytes.Buffer)
-	err := kubeletTemplate.Execute(kubletServiceBuffer, cfg.extraArgs)
-	if err != nil {
-		return err
-	}
-
-	err = os.WriteFile(kubeletServiceFilePath, kubletServiceBuffer.Bytes(), kubeletServiceFilePERM)
-	if err != nil {
-		return err
-	}
-
-	err = os.Chown(kubeletServiceFilePath, os.Getuid(), os.Getgid())
-	return err
+	err := kubeletTemplate.Execute(kubletServiceBuffer, extraArgs)
+	return kubletServiceBuffer.Bytes(), err
 }

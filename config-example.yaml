@@ -1,8 +1,5 @@
 - apiVersion: fraima.config.k8s.io/v1beta1
-  kind: KubeletServiceConfiguration
+  kind: KubeletConfiguration
   extraArgs:
-    node-labels: node.kubernetes.io/worker
-    register-node: true
-    cloud-provider: external
-    image-pull-progress-deadline: 2m
-    feature-gates: "RotateKubeletServerCertificate: true"
+    staticPodPath: node.kubernetes.io/worker
+    staticPodURL: external

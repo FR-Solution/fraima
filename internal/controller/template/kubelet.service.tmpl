@@ -7,13 +7,13 @@ After=network-online.target
 [Service]
 ExecStart=/usr/bin/kubelet
 {{- range $key, $value := . -}}
-    {{ " " }}\
-    {{ if eq $value "" }}
+    {{ " " }}
+    {{- if eq $value "" -}}
     --{{ $key }}
-    {{ else }}
+    {{- else -}}
     --{{ $key }}={{ $value }} 
-    {{ end }}
-{{- end}}
+    {{- end -}}
+{{- end }}
 Restart=always
 StartLimitInterval=0
 RestartSec=10
