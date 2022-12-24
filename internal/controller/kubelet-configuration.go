@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"unicode"
 
-	tag "github.com/irbgeo/struct-tag-builder"
+	"github.com/irbgeo/go-structure"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
@@ -63,19 +63,20 @@ func getKubeletConfiguration(extraArgs any) (*kubeletconfig.KubeletConfiguration
 		return nil, err
 	}
 
+	kcs, err := structure.New(new(kubeletconfig.KubeletConfiguration))
+	if err != nil {
+		return nil, err
+	}
+
+	kcs.AddTags(getTag)
+
+	err = json.Unmarshal(jsonData, kcs.Struct())
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := new(kubeletconfig.KubeletConfiguration)
-	tb, err := tag.NewTagBuilder(cfg)
-	if err != nil {
-		return nil, err
-	}
-
-	c := tb.Build(getTag)
-	err = json.Unmarshal(jsonData, c.Writable())
-	if err != nil {
-		return nil, err
-	}
-
-	err = c.SaveInto(cfg)
+	err = kcs.SaveInto(cfg)
 	return cfg, err
 }
 

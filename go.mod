@@ -3,7 +3,7 @@ module github.com/fraima/fraima
 go 1.19
 
 require (
-	github.com/irbgeo/struct-tag-builder v0.0.0-20221222193442-a2062c1b3ff8
+	github.com/irbgeo/go-structure v0.0.0-20221224153808-75ec6ab8abdc
 	go.uber.org/zap v1.24.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/apimachinery v0.26.0
