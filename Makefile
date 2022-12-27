@@ -7,6 +7,9 @@ tag = $(DOCKER_USER)/$(project):$(release)
 pwd = $(shell pwd)
 module = $(shell go list -m)
 
+build-bin:
+	go install ./...
+
 build-and-push:
 	docker build -t $(tag) --build-arg VERSION=$(release) --build-arg PROJECT=$(project) -f Dockerfile .
 	docker image push $(tag)

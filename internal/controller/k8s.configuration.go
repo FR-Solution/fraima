@@ -31,18 +31,18 @@ func createK8sConfiguration(cfg config.File) error {
 }
 
 func createK8sConfigurationData(cfg config.File) ([]byte, error) {
-	extraArgs := make(map[string]string)
+	var (
+		args []any
+		ok   bool
+	)
 	if cfg.ExtraArgs != nil {
-		args, ok := cfg.ExtraArgs.(map[any]any)
+		args, ok = cfg.ExtraArgs.([]any)
 		if !ok {
 			return nil, fmt.Errorf("args converting is not available")
-		}
-		for k, v := range args {
-			extraArgs[fmt.Sprint(k)] = fmt.Sprint(v)
 		}
 	}
 
 	k8sConfigurationServiceBuffer := new(bytes.Buffer)
-	err := k8sConfigurationTemplate.Execute(k8sConfigurationServiceBuffer, extraArgs)
+	err := k8sConfigurationTemplate.Execute(k8sConfigurationServiceBuffer, args)
 	return k8sConfigurationServiceBuffer.Bytes(), err
 }

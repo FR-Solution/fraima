@@ -23,10 +23,12 @@ func main() {
 	zap.ReplaceGlobals(logger)
 
 	var configFile string
-	flag.StringVar(&configFile, "config", "/home/geo/projects/fraima/fraima/config-example.yaml", "path to dir with configs")
+	flag.StringVar(&configFile, "config", "", "path to dir with configs")
 	flag.Parse()
 
-	// TODO check
+	if configFile == "" {
+		zap.L().Fatal("the path to the config file is not set")
+	}
 
 	zap.L().Debug("configuration", zap.String("version", Version))
 
