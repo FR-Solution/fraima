@@ -7,8 +7,11 @@ import (
 )
 
 var kindCreator map[string]func(config.File) error = map[string]func(config.File) error{
-	"KubeletService":       createKubletService,
-	"KubeletConfiguration": createKubletConfiguration,
+	"KubeletService":             createKubletService,
+	"KubeletConfiguration":       createKubletConfiguration,
+	"ContainerService":           createContainerdService,
+	"SysctlNetworkConfiguration": createSysctlNetworkConfiguration,
+	"K8sConfiguration":           createK8sConfiguration,
 }
 
 func Generation(files []config.File) error {

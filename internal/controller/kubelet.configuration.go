@@ -20,30 +20,28 @@ const (
 )
 
 func createKubletConfiguration(cfg config.File) error {
-	data, err := createKubeletConfigurationData(cfg)
+	groupVersion, err := schema.ParseGroupVersion(cfg.APIVersion)
 	if err != nil {
 		return err
 	}
 
-	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM)
-}
-
-func createKubeletConfigurationData(cfg config.File) ([]byte, error) {
-	groupVersion, err := schema.ParseGroupVersion(cfg.APIVersion)
-	if err != nil {
-		return nil, err
-	}
-
 	kubeletConfiguration, err := getKubeletConfiguration(cfg.ExtraArgs)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	kubeletConfiguration.TypeMeta = metav1.TypeMeta{
 		Kind:       cfg.Kind,
 		APIVersion: cfg.APIVersion,
 	}
 
-	return codec.EncodeKubeletConfig(kubeletConfiguration, groupVersion)
+	data, err := codec.EncodeKubeletConfig(kubeletConfiguration, groupVersion)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("%s", data)
+
+	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM)
 }
 
 func getKubeletConfiguration(extraArgs any) (*kubeletconfig.KubeletConfiguration, error) {
