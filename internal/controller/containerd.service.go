@@ -11,8 +11,8 @@ import (
 
 var (
 	//go:embed template/containerd.service.tmpl
-	containerdTemplateStr string
-	containerdTemplate    = template.Must(template.New("containerd-service").Parse(containerdTemplateStr))
+	containerdServiceTemplateStr string
+	containerdServiceTemplate    = template.Must(template.New("containerd-service").Parse(containerdServiceTemplateStr))
 )
 
 const (
@@ -43,6 +43,6 @@ func createContainerdServiceData(cfg config.File) ([]byte, error) {
 	}
 
 	containerdServiceBuffer := new(bytes.Buffer)
-	err := containerdTemplate.Execute(containerdServiceBuffer, extraArgs)
+	err := containerdServiceTemplate.Execute(containerdServiceBuffer, extraArgs)
 	return containerdServiceBuffer.Bytes(), err
 }
