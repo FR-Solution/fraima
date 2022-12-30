@@ -2,6 +2,7 @@ package controller
 
 import (
 	_ "embed"
+	"encoding/json"
 	"fmt"
 
 	containerd "github.com/containerd/containerd/cmd/containerd/command"
@@ -27,27 +28,38 @@ func createContainerdConfiguration(cfg config.File) error {
 }
 
 func createContainerdConfigurationData(cfg config.File) ([]byte, error) {
-	extraArgs := make(map[string]any)
+	var eargs map[string]any
 	if cfg.ExtraArgs != nil {
 		args, ok := cfg.ExtraArgs.(map[any]any)
 		if !ok {
 			return nil, fmt.Errorf("args converting is not available")
 		}
-		for k, v := range args {
-			extraArgs[fmt.Sprint(k)] = v
-		}
+		eargs = getArgsMap(args)
 	}
 
-	st, err := structure.New(new(containerd.Config))
+	jsonData, err := json.Marshal(eargs)
 	if err != nil {
 		return nil, err
 	}
 
-	err = st.AssignFrom(extraArgs)
+	cc, err := structure.New(new(containerd.Config))
 	if err != nil {
 		return nil, err
 	}
 
-	data, err := toml.Marshal(st.Struct())
+	cc.AddTags(getTag)
+
+	err = json.Unmarshal(jsonData, cc.Struct())
+	if err != nil {
+		return nil, err
+	}
+
+	containerdCfg := new(containerd.Config)
+	err = cc.SaveInto(containerdCfg)
+	if err != nil {
+		return nil, err
+	}
+
+	data, err := toml.Marshal(containerdCfg)
 	return data, err
 }
