@@ -49,6 +49,5 @@ func createContainerdConfigurationData(cfg config.File) ([]byte, error) {
 	}
 
 	data, err := toml.Marshal(st.Struct())
-	fmt.Printf("%s", data)
 	return data, err
 }

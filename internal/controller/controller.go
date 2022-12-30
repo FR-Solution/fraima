@@ -12,7 +12,7 @@ var kindCreator map[string]func(config.File) error = map[string]func(config.File
 	"ContainerdService":          createContainerdService,
 	"ContainerdConfiguration":    createContainerdConfiguration,
 	"SysctlNetworkConfiguration": createSysctlNetworkConfiguration,
-	"K8sConfiguration":           createK8sConfiguration,
+	"ModProbConfiguration":       createModProbConfiguration,
 }
 
 func Generation(files []config.File) error {

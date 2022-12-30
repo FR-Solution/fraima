@@ -20,9 +20,9 @@ const (
 	k8sConfigurationServiceFilePERM = 0644
 )
 
-// createK8sConfiguration create k8s.conf file.
-func createK8sConfiguration(cfg config.File) error {
-	data, err := createK8sConfigurationData(cfg)
+// createModProbConfiguration create k8s.conf file.
+func createModProbConfiguration(cfg config.File) error {
+	data, err := createModProbConfigurationData(cfg)
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func createK8sConfiguration(cfg config.File) error {
 	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM)
 }
 
-func createK8sConfigurationData(cfg config.File) ([]byte, error) {
+func createModProbConfigurationData(cfg config.File) ([]byte, error) {
 	var (
 		args []any
 		ok   bool

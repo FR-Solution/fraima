@@ -1,7 +1,23 @@
+- apiVersion: { { APIVERSION } }
+  kind: KubeletService
+  extraArgs: { { key - value } }
 
-- apiVersion: kubelet.config.k8s.io/v1beta1
+- apiVersion: { { APIVERSION } }
+  kind: KubeletConfiguration
+  extraArgs: { { key - value } }
+
+- apiVersion: Х{ APIVERSION }}
+  kind: ContainerdService
+  extraArgs: { { key - value } }
+
+- apiVersion: { { APIVERSION } }
   kind: ContainerdConfiguration
-  extraArgs:
-    staticPodPath: node.kubernetes.io/worker
-    staticPodURL: external
+  extraArgs: { { key - value } }
 
+- apiVersion: { { APIVERSION } }
+  kind: SysctlNetworkConfiguration
+  extraArgs: { { key - value } }
+
+- apiVersion: { { APIVERSION } }
+  kind: ModProbConfiguration
+  extraArgs: { { array } }
