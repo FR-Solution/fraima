@@ -38,8 +38,6 @@ func createKubletConfiguration(cfg config.File) error {
 		return err
 	}
 
-	fmt.Printf("%s", data)
-
 	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM)
 }
 

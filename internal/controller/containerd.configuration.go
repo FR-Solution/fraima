@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	containerd "github.com/containerd/containerd/cmd/containerd/command"
+	containerd "github.com/containerd/containerd/services/server/config"
 	"github.com/irbgeo/go-structure"
 	"github.com/pelletier/go-toml"
 

@@ -1,5 +1,9 @@
-
 - apiVersion: fraima.io/v1alpha
+  kind: KubeletService
+  extraArgs: 
+
+
+- apiVersion: kubelet.config.k8s.io/v1beta1
   kind: KubeletConfiguration
   extraArgs:
     authentication:
@@ -62,3 +66,19 @@
     rotateCertificates: false
     serverTLSBootstrap: true
     tlsMinVersion: VersionTLS12
+
+- apiVersion: fraima.io/v1alpha
+  kind: ContainerdService
+  extraArgs:
+
+- apiVersion: fraima.io/v1alpha
+  kind: ContainerdConfiguration
+  extraArgs:
+
+- apiVersion: fraima.io/v1alpha
+  kind: SysctlNetworkConfiguration
+  extraArgs:
+
+- apiVersion: fraima.io/v1alpha
+  kind: ModProbConfiguration
+  extraArgs:
