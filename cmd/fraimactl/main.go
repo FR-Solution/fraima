@@ -27,13 +27,13 @@ func main() {
 	var skipKindList string
 	flag.StringVar(&configFile, "config", "", "path to dir with configs")
 	flag.StringVar(&skipKindList, "slip-kinds", "", `list of skipped kind
-	supported kind:
-		KubeletService
-		KubeletConfiguration
-		ContainerdService
-		ContainerdConfiguration
-		SysctlNetworkConfiguration
-		ModProbConfiguration`)
+supported kind:
+	KubeletService
+	KubeletConfiguration
+	ContainerdService
+	ContainerdConfiguration
+	SysctlNetworkConfiguration
+	ModProbConfiguration`)
 	flag.Parse()
 
 	if configFile == "" {
