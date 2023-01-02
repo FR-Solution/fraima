@@ -1,4 +1,4 @@
-package controller
+package generator
 
 import (
 	"go.uber.org/zap"
@@ -15,7 +15,7 @@ var kindCreator map[string]func(config.File) error = map[string]func(config.File
 	"ModProbConfiguration":       createModProbConfiguration,
 }
 
-func Generation(files []config.File, skippingKinds map[string]struct{}) error {
+func Run(files []config.File, skippingKinds map[string]struct{}) {
 	for _, f := range files {
 		if _, isSkipping := skippingKinds[f.Kind]; isSkipping {
 			continue
@@ -32,5 +32,4 @@ func Generation(files []config.File, skippingKinds map[string]struct{}) error {
 		}
 		zap.L().Info("file created", zap.String("kind", f.Kind))
 	}
-	return nil
 }

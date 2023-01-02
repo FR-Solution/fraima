@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/fraima/fraimactl/internal/config"
-	"github.com/fraima/fraimactl/internal/controller"
+	"github.com/fraima/fraimactl/internal/generator"
 )
 
 var (
@@ -55,10 +55,7 @@ supported kind:
 
 	zap.L().Info("started")
 
-	err = controller.Generation(files, skippingKind)
-	if err != nil {
-		zap.L().Fatal("generation", zap.Error(err))
-	}
+	generator.Run(files, skippingKind)
 
 	zap.L().Info("goodbye")
 }
