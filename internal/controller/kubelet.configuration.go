@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"unicode"
 
 	"github.com/irbgeo/go-structure"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -10,7 +11,7 @@ import (
 	kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
 	"k8s.io/kubernetes/pkg/kubelet/kubeletconfig/util/codec"
 
-	"github.com/fraimactl/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/config"
 )
 
 const (
@@ -71,4 +72,12 @@ func getKubeletConfiguration(extraArgs any) (*kubeletconfig.KubeletConfiguration
 	cfg := new(kubeletconfig.KubeletConfiguration)
 	err = kc.SaveInto(cfg)
 	return cfg, err
+}
+
+func getTag(fieldName, fieldTag string) string {
+	for i, v := range fieldName {
+		tagValue := string(unicode.ToLower(v)) + fieldName[i+1:]
+		return fmt.Sprintf(`json:"%s"`, tagValue)
+	}
+	return ""
 }

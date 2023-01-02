@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"os"
 	"path"
-	"unicode"
 )
 
 func createFile(filepath string, data []byte, perm int) error {
@@ -33,12 +32,4 @@ func getArgsMap(args map[any]any) map[string]any {
 		rArgs[fmt.Sprint(k)] = v
 	}
 	return rArgs
-}
-
-func getTag(fieldName string) string {
-	for i, v := range fieldName {
-		tagValue := string(unicode.ToLower(v)) + fieldName[i+1:]
-		return fmt.Sprintf(`json:"%s"`, tagValue)
-	}
-	return ""
 }

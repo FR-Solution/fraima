@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
+	"strings"
 
 	"go.uber.org/zap"
 
-	"github.com/fraimactl/fraimactl/internal/config"
-	"github.com/fraimactl/fraimactl/internal/controller"
+	"github.com/fraima/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/controller"
 )
 
 var (
@@ -23,11 +24,26 @@ func main() {
 	zap.ReplaceGlobals(logger)
 
 	var configFile string
-	flag.StringVar(&configFile, "config", "/home/geo/projects/fraimactl/fraimactl/config-example.yaml", "path to dir with configs")
+	var skipKindList string
+	flag.StringVar(&configFile, "config", "", "path to dir with configs")
+	flag.StringVar(&skipKindList, "slip-kinds", "", `list of skipped kind
+	supported kind:
+		KubeletService
+		KubeletConfiguration
+		ContainerdService
+		ContainerdConfiguration
+		SysctlNetworkConfiguration
+		ModProbConfiguration`)
 	flag.Parse()
 
 	if configFile == "" {
 		zap.L().Fatal("the path to the config file is not set")
+	}
+
+	skippingKind := make(map[string]struct{})
+	kindList := strings.Split(skipKindList, " ")
+	for _, k := range kindList {
+		skippingKind[k] = struct{}{}
 	}
 
 	zap.L().Debug("configuration", zap.String("version", Version))
@@ -39,7 +55,7 @@ func main() {
 
 	zap.L().Info("started")
 
-	err = controller.Generation(files)
+	err = controller.Generation(files, skippingKind)
 	if err != nil {
 		zap.L().Fatal("generation", zap.Error(err))
 	}

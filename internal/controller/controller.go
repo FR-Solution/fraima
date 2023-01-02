@@ -3,7 +3,7 @@ package controller
 import (
 	"go.uber.org/zap"
 
-	"github.com/fraimactl/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/config"
 )
 
 var kindCreator map[string]func(config.File) error = map[string]func(config.File) error{
@@ -15,8 +15,11 @@ var kindCreator map[string]func(config.File) error = map[string]func(config.File
 	"ModProbConfiguration":       createModProbConfiguration,
 }
 
-func Generation(files []config.File) error {
+func Generation(files []config.File, skippingKinds map[string]struct{}) error {
 	for _, f := range files {
+		if _, isSkipping := skippingKinds[f.Kind]; isSkipping {
+			continue
+		}
 		create, isExist := kindCreator[f.Kind]
 		if !isExist {
 			zap.L().Warn("unknown kind", zap.String("kind", f.Kind))

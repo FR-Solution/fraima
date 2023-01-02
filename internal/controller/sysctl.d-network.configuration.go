@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"text/template"
 
-	"github.com/fraimactl/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/config"
 )
 
 var (

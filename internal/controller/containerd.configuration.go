@@ -2,14 +2,11 @@ package controller
 
 import (
 	_ "embed"
-	"encoding/json"
 	"fmt"
 
-	containerd "github.com/containerd/containerd/services/server/config"
-	"github.com/irbgeo/go-structure"
 	"github.com/pelletier/go-toml"
 
-	"github.com/fraimactl/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/config"
 )
 
 const (
@@ -37,29 +34,39 @@ func createContainerdConfigurationData(cfg config.File) ([]byte, error) {
 		eargs = getArgsMap(args)
 	}
 
-	jsonData, err := json.Marshal(eargs)
+	tomlData, err := toml.Marshal(eargs)
 	if err != nil {
 		return nil, err
 	}
 
-	cc, err := structure.New(new(containerd.Config))
-	if err != nil {
-		return nil, err
-	}
+	// TODO:
+	// for "github.com/pelletier/go-toml/v2"
+	// When will https://github.com/pelletier/go-toml/issues/836 close
+	// cc, err := structure.New(new(containerd.Config))
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	cc.AddTags(getTag)
+	// cc.AddTags(getContainerdTag)
 
-	err = json.Unmarshal(jsonData, cc.Struct())
-	if err != nil {
-		return nil, err
-	}
+	// err = toml.Unmarshal(tomlData, cc.Struct())
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	containerdCfg := new(containerd.Config)
-	err = cc.SaveInto(containerdCfg)
-	if err != nil {
-		return nil, err
-	}
+	// return toml.Marshal(cc.Struct())
 
-	data, err := toml.Marshal(containerdCfg)
-	return data, err
+	return tomlData, err
 }
+
+// TODO:
+// for "github.com/pelletier/go-toml/v2"
+// When will https://github.com/pelletier/go-toml/issues/836 close
+// var regexpContainerdTag = regexp.MustCompile(`"$`)
+
+// func getContainerdTag(fieldName, fieldTag string) string {
+// 	if fieldTag != "" {
+// 		fieldTag = regexpContainerdTag.ReplaceAllString(fieldTag, `,omitempty"`)
+// 	}
+// 	return fieldTag
+// }
