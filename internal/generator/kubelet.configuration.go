@@ -19,7 +19,7 @@ const (
 	kubeletConfigurationFilePERM = 0644
 )
 
-func createKubletConfiguration(cfg config.File) error {
+func createKubletConfiguration(cfg config.Generate) error {
 	groupVersion, err := schema.ParseGroupVersion(cfg.APIVersion)
 	if err != nil {
 		return err

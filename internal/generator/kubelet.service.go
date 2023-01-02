@@ -21,7 +21,7 @@ const (
 )
 
 // createKubletService create kubelet.service file.
-func createKubletService(cfg config.File) error {
+func createKubletService(cfg config.Generate) error {
 	data, err := createKubleteServiceData(cfg)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func createKubletService(cfg config.File) error {
 	return createFile(kubeletServiceFilePath, data, kubeletServiceFilePERM)
 }
 
-func createKubleteServiceData(cfg config.File) ([]byte, error) {
+func createKubleteServiceData(cfg config.Generate) ([]byte, error) {
 	extraArgs := make(map[string]string)
 	if cfg.ExtraArgs != nil {
 		args, ok := cfg.ExtraArgs.(map[any]any)

@@ -21,7 +21,7 @@ const (
 )
 
 // createSysctlNetworkConfiguration create Sysctls.service file.
-func createSysctlNetworkConfiguration(cfg config.File) error {
+func createSysctlNetworkConfiguration(cfg config.Generate) error {
 	data, err := createSysctlsServiceData(cfg)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func createSysctlNetworkConfiguration(cfg config.File) error {
 	return createFile(sysctlsFilePath, data, sysctlsFilePERM)
 }
 
-func createSysctlsServiceData(cfg config.File) ([]byte, error) {
+func createSysctlsServiceData(cfg config.Generate) ([]byte, error) {
 	extraArgs := make(map[string]string)
 	if cfg.ExtraArgs != nil {
 		args, ok := cfg.ExtraArgs.(map[any]any)

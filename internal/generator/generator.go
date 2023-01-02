@@ -6,7 +6,7 @@ import (
 	"github.com/fraima/fraimactl/internal/config"
 )
 
-var kindCreator map[string]func(config.File) error = map[string]func(config.File) error{
+var kindCreator map[string]func(config.Generate) error = map[string]func(config.Generate) error{
 	"KubeletService":             createKubletService,
 	"KubeletConfiguration":       createKubletConfiguration,
 	"ContainerdService":          createContainerdService,
@@ -15,8 +15,8 @@ var kindCreator map[string]func(config.File) error = map[string]func(config.File
 	"ModProbConfiguration":       createModProbConfiguration,
 }
 
-func Run(files []config.File, skippingKinds map[string]struct{}) {
-	for _, f := range files {
+func Run(generateList []config.Generate, skippingKinds map[string]struct{}) {
+	for _, f := range generateList {
 		if _, isSkipping := skippingKinds[f.Kind]; isSkipping {
 			continue
 		}

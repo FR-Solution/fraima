@@ -21,7 +21,7 @@ const (
 )
 
 // createModProbConfiguration create k8s.conf file.
-func createModProbConfiguration(cfg config.File) error {
+func createModProbConfiguration(cfg config.Generate) error {
 	data, err := createModProbConfigurationData(cfg)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func createModProbConfiguration(cfg config.File) error {
 	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM)
 }
 
-func createModProbConfigurationData(cfg config.File) ([]byte, error) {
+func createModProbConfigurationData(cfg config.Generate) ([]byte, error) {
 	var (
 		args []any
 		ok   bool

@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/fraima/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/downloader"
 	"github.com/fraima/fraimactl/internal/generator"
 )
 
@@ -48,14 +49,15 @@ supported kind:
 
 	zap.L().Debug("configuration", zap.String("version", Version))
 
-	files, err := config.ReadConfig(configFile)
+	cfg, err := config.ReadConfig(configFile)
 	if err != nil {
 		zap.L().Fatal("read config", zap.Error(err))
 	}
 
 	zap.L().Info("started")
 
-	generator.Run(files, skippingKind)
+	generator.Run(cfg.GenerateList, skippingKind)
+	downloader.Run(cfg.DownloadList)
 
 	zap.L().Info("goodbye")
 }

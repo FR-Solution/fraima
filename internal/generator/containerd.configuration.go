@@ -15,7 +15,7 @@ const (
 )
 
 // createContainerdConfiguration create containerd.service file.
-func createContainerdConfiguration(cfg config.File) error {
+func createContainerdConfiguration(cfg config.Generate) error {
 	data, err := createContainerdConfigurationData(cfg)
 	if err != nil {
 		return err
@@ -24,7 +24,7 @@ func createContainerdConfiguration(cfg config.File) error {
 	return createFile(containerdConfigurationFilePath, data, containerdConfigurationFilePERM)
 }
 
-func createContainerdConfigurationData(cfg config.File) ([]byte, error) {
+func createContainerdConfigurationData(cfg config.Generate) ([]byte, error) {
 	var eargs map[string]any
 	if cfg.ExtraArgs != nil {
 		args, ok := cfg.ExtraArgs.(map[any]any)

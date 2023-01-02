@@ -1,11 +1,11 @@
 package config
 
 type Config struct {
-	GenerateList []File     `yaml:"generating"`
+	GenerateList []Generate `yaml:"generating"`
 	DownloadList []Download `yaml:"downloading"`
 }
 
-type File struct {
+type Generate struct {
 	APIVersion string `yaml:"apiVersion"`
 	Kind       string `yaml:"kind"`
 	ExtraArgs  any    `yaml:"extraArgs"`

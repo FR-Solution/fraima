@@ -21,7 +21,7 @@ const (
 )
 
 // createContainerdService create containerd.service file.
-func createContainerdService(cfg config.File) error {
+func createContainerdService(cfg config.Generate) error {
 	data, err := createContainerdServiceData(cfg)
 	if err != nil {
 		return err
@@ -30,7 +30,7 @@ func createContainerdService(cfg config.File) error {
 	return createFile(containerdServiceFilePath, data, containerdServiceFilePERM)
 }
 
-func createContainerdServiceData(cfg config.File) ([]byte, error) {
+func createContainerdServiceData(cfg config.Generate) ([]byte, error) {
 	extraArgs := make(map[string]string)
 	if cfg.ExtraArgs != nil {
 		args, ok := cfg.ExtraArgs.(map[any]any)
