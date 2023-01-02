@@ -1,5 +1,5 @@
 #change for new project
-project = fraima
+project = fraimactl
 #change for new release
 release = v1.0.0
 

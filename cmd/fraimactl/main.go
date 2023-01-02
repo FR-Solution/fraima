@@ -5,8 +5,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/fraima/fraima/internal/config"
-	"github.com/fraima/fraima/internal/controller"
+	"github.com/fraimactl/fraimactl/internal/config"
+	"github.com/fraimactl/fraimactl/internal/controller"
 )
 
 var (
@@ -23,7 +23,7 @@ func main() {
 	zap.ReplaceGlobals(logger)
 
 	var configFile string
-	flag.StringVar(&configFile, "config", "/home/geo/projects/fraima/fraima/config-example.yaml", "path to dir with configs")
+	flag.StringVar(&configFile, "config", "/home/geo/projects/fraimactl/fraimactl/config-example.yaml", "path to dir with configs")
 	flag.Parse()
 
 	if configFile == "" {

@@ -1,4 +1,4 @@
-- apiVersion: fraima.io/v1alpha
+- apiVersion: fraimactl.io/v1alpha
   kind: KubeletService
   extraArgs: 
 
@@ -67,18 +67,18 @@
     serverTLSBootstrap: true
     tlsMinVersion: VersionTLS12
 
-- apiVersion: fraima.io/v1alpha
+- apiVersion: fraimactl.io/v1alpha
   kind: ContainerdService
   extraArgs:
 
-- apiVersion: fraima.io/v1alpha
+- apiVersion: fraimactl.io/v1alpha
   kind: ContainerdConfiguration
   extraArgs:
 
-- apiVersion: fraima.io/v1alpha
+- apiVersion: fraimactl.io/v1alpha
   kind: SysctlNetworkConfiguration
   extraArgs:
 
-- apiVersion: fraima.io/v1alpha
+- apiVersion: fraimactl.io/v1alpha
   kind: ModProbConfiguration
   extraArgs:

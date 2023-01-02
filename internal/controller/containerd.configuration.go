@@ -9,7 +9,7 @@ import (
 	"github.com/irbgeo/go-structure"
 	"github.com/pelletier/go-toml"
 
-	"github.com/fraima/fraima/internal/config"
+	"github.com/fraimactl/fraimactl/internal/config"
 )
 
 const (

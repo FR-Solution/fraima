@@ -1,4 +1,4 @@
-module github.com/fraima/fraima
+module github.com/fraimactl/fraimactl
 
 go 1.19
 

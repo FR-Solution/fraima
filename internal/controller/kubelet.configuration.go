@@ -10,7 +10,7 @@ import (
 	kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
 	"k8s.io/kubernetes/pkg/kubelet/kubeletconfig/util/codec"
 
-	"github.com/fraima/fraima/internal/config"
+	"github.com/fraimactl/fraimactl/internal/config"
 )
 
 const (

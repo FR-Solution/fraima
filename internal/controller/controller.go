@@ -3,7 +3,7 @@ package controller
 import (
 	"go.uber.org/zap"
 
-	"github.com/fraima/fraima/internal/config"
+	"github.com/fraimactl/fraimactl/internal/config"
 )
 
 var kindCreator map[string]func(config.File) error = map[string]func(config.File) error{
