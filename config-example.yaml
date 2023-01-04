@@ -1,18 +1,21 @@
-generating:
-  - apiVersion: fraima.io/v1alpha
+- apiVersion: fraima.io/v1alpha
+  kind: Downloading
+  spec:
+    - name: kubectl
+      src: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
+      hostpath: /usr/bin/
+      permission: 0644
+
+- apiVersion: fraima.io/v1alpha
     kind: ContainerdConfiguration
-    extraArgs:
+    spec:
       version: 2
       plugins:
         io.containerd.grpc.v1.cri:
+          disable_apparmor: true
           containerd:
             runtimes:
               runc:
                 runtime_type: "io.containerd.runc.v2"
                 options:
-                  SystemdCgroup: true
-
-downloading:
-  - url: <url>
-    filepath: <path-to-save>
-    permission: <permission>
+                  SystemdCgroup: false

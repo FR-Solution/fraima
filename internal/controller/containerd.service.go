@@ -1,4 +1,4 @@
-package generator
+package controller
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ const (
 )
 
 // createContainerdService create containerd.service file.
-func createContainerdService(cfg config.Generate) error {
+func createContainerdService(cfg config.Instruction) error {
 	data, err := createContainerdServiceData(cfg)
 	if err != nil {
 		return err
@@ -30,10 +30,10 @@ func createContainerdService(cfg config.Generate) error {
 	return createFile(containerdServiceFilePath, data, containerdServiceFilePERM)
 }
 
-func createContainerdServiceData(cfg config.Generate) ([]byte, error) {
+func createContainerdServiceData(cfg config.Instruction) ([]byte, error) {
 	extraArgs := make(map[string]string)
-	if cfg.ExtraArgs != nil {
-		args, ok := cfg.ExtraArgs.(map[any]any)
+	if cfg.Spec != nil {
+		args, ok := cfg.Spec.(map[any]any)
 		if !ok {
 			return nil, fmt.Errorf("args converting is not available")
 		}

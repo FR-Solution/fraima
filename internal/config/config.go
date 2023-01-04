@@ -6,13 +6,13 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func ReadConfig(configFilePath string) (*Config, error) {
+func GetInstructionList(configFilePath string) ([]Instruction, error) {
 	data, err := os.ReadFile(configFilePath)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg := new(Config)
-	err = yaml.Unmarshal(data, cfg)
+	var cfg []Instruction
+	err = yaml.Unmarshal(data, &cfg)
 	return cfg, err
 }

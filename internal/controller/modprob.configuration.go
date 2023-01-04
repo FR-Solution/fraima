@@ -1,4 +1,4 @@
-package generator
+package controller
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ const (
 )
 
 // createModProbConfiguration create k8s.conf file.
-func createModProbConfiguration(cfg config.Generate) error {
+func createModProbConfiguration(cfg config.Instruction) error {
 	data, err := createModProbConfigurationData(cfg)
 	if err != nil {
 		return err
@@ -30,13 +30,13 @@ func createModProbConfiguration(cfg config.Generate) error {
 	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM)
 }
 
-func createModProbConfigurationData(cfg config.Generate) ([]byte, error) {
+func createModProbConfigurationData(cfg config.Instruction) ([]byte, error) {
 	var (
 		args []any
 		ok   bool
 	)
-	if cfg.ExtraArgs != nil {
-		args, ok = cfg.ExtraArgs.([]any)
+	if cfg.Spec != nil {
+		args, ok = cfg.Spec.([]any)
 		if !ok {
 			return nil, fmt.Errorf("args converting is not available")
 		}

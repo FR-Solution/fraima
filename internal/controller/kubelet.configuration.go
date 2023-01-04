@@ -1,4 +1,4 @@
-package generator
+package controller
 
 import (
 	"encoding/json"
@@ -19,13 +19,13 @@ const (
 	kubeletConfigurationFilePERM = 0644
 )
 
-func createKubletConfiguration(cfg config.Generate) error {
+func createKubletConfiguration(cfg config.Instruction) error {
 	groupVersion, err := schema.ParseGroupVersion(cfg.APIVersion)
 	if err != nil {
 		return err
 	}
 
-	kubeletConfiguration, err := getKubeletConfiguration(cfg.ExtraArgs)
+	kubeletConfiguration, err := getKubeletConfiguration(cfg.Spec)
 	if err != nil {
 		return err
 	}
@@ -42,14 +42,10 @@ func createKubletConfiguration(cfg config.Generate) error {
 	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM)
 }
 
-func getKubeletConfiguration(extraArgs any) (*kubeletconfig.KubeletConfiguration, error) {
-	var eargs map[string]any
-	if extraArgs != nil {
-		args, ok := extraArgs.(map[any]any)
-		if !ok {
-			return nil, fmt.Errorf("args converting is not available")
-		}
-		eargs = getArgsMap(args)
+func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, error) {
+	eargs, err := getMap(spec)
+	if err != nil {
+		return nil, err
 	}
 
 	jsonData, err := json.Marshal(eargs)

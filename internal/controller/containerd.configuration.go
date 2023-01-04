@@ -1,8 +1,7 @@
-package generator
+package controller
 
 import (
 	_ "embed"
-	"fmt"
 
 	"github.com/pelletier/go-toml"
 
@@ -15,7 +14,7 @@ const (
 )
 
 // createContainerdConfiguration create containerd.service file.
-func createContainerdConfiguration(cfg config.Generate) error {
+func createContainerdConfiguration(cfg config.Instruction) error {
 	data, err := createContainerdConfigurationData(cfg)
 	if err != nil {
 		return err
@@ -24,14 +23,10 @@ func createContainerdConfiguration(cfg config.Generate) error {
 	return createFile(containerdConfigurationFilePath, data, containerdConfigurationFilePERM)
 }
 
-func createContainerdConfigurationData(cfg config.Generate) ([]byte, error) {
-	var eargs map[string]any
-	if cfg.ExtraArgs != nil {
-		args, ok := cfg.ExtraArgs.(map[any]any)
-		if !ok {
-			return nil, fmt.Errorf("args converting is not available")
-		}
-		eargs = getArgsMap(args)
+func createContainerdConfigurationData(cfg config.Instruction) ([]byte, error) {
+	eargs, err := getMap(cfg.Spec)
+	if err != nil {
+		return nil, err
 	}
 
 	tomlData, err := toml.Marshal(eargs)
@@ -42,6 +37,7 @@ func createContainerdConfigurationData(cfg config.Generate) ([]byte, error) {
 	// TODO:
 	// for "github.com/pelletier/go-toml/v2"
 	// When will https://github.com/pelletier/go-toml/issues/836 close
+
 	// cc, err := structure.New(new(containerd.Config))
 	// if err != nil {
 	// 	return nil, err
@@ -62,6 +58,7 @@ func createContainerdConfigurationData(cfg config.Generate) ([]byte, error) {
 // TODO:
 // for "github.com/pelletier/go-toml/v2"
 // When will https://github.com/pelletier/go-toml/issues/836 close
+
 // var regexpContainerdTag = regexp.MustCompile(`"$`)
 
 // func getContainerdTag(fieldName, fieldTag string) string {

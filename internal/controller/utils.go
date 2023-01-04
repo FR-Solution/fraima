@@ -1,4 +1,4 @@
-package generator
+package controller
 
 import (
 	"fmt"
@@ -22,14 +22,22 @@ func createFile(filepath string, data []byte, perm int) error {
 	return err
 }
 
-func getArgsMap(args map[any]any) map[string]any {
+func getMap(i any) (map[string]any, error) {
 	rArgs := make(map[string]any)
+	err := fmt.Errorf("args converting is not available")
+	args, ok := i.(map[any]any)
+	if !ok {
+		return rArgs, err
+	}
 	for k, v := range args {
 		if nArgs, ok := v.(map[any]any); ok {
-			rArgs[fmt.Sprint(k)] = getArgsMap(nArgs)
+			rArgs[fmt.Sprint(k)], err = getMap(nArgs)
+			if err != nil {
+				return rArgs, err
+			}
 			continue
 		}
 		rArgs[fmt.Sprint(k)] = v
 	}
-	return rArgs
+	return rArgs, nil
 }

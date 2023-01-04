@@ -1,4 +1,4 @@
-package generator
+package controller
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ const (
 )
 
 // createSysctlNetworkConfiguration create Sysctls.service file.
-func createSysctlNetworkConfiguration(cfg config.Generate) error {
+func createSysctlNetworkConfiguration(cfg config.Instruction) error {
 	data, err := createSysctlsServiceData(cfg)
 	if err != nil {
 		return err
@@ -30,10 +30,10 @@ func createSysctlNetworkConfiguration(cfg config.Generate) error {
 	return createFile(sysctlsFilePath, data, sysctlsFilePERM)
 }
 
-func createSysctlsServiceData(cfg config.Generate) ([]byte, error) {
+func createSysctlsServiceData(cfg config.Instruction) ([]byte, error) {
 	extraArgs := make(map[string]string)
-	if cfg.ExtraArgs != nil {
-		args, ok := cfg.ExtraArgs.(map[any]any)
+	if cfg.Spec != nil {
+		args, ok := cfg.Spec.(map[any]any)
 		if !ok {
 			return nil, fmt.Errorf("args converting is not available")
 		}
