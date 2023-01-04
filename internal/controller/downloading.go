@@ -1,12 +1,17 @@
 package controller
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/fs"
+	"log"
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"github.com/fraima/fraimactl/internal/config"
 )
@@ -16,6 +21,7 @@ type downloadItem struct {
 	Src        string `json:"src"`
 	HostPath   string `json:"hostpath"`
 	Permission int    `json:"permission"`
+	Unzip      bool   `json:"unzip"`
 }
 
 func downloading(d config.Instruction) error {
@@ -33,19 +39,32 @@ func downloading(d config.Instruction) error {
 }
 
 func download(i downloadItem) error {
-	download := path.Base(i.Src)
+	downloadFile := path.Base(i.Src)
+	hostPath := path.Join(i.HostPath, downloadFile)
 
-	err := wget(i.Src, path.Join(i.HostPath, download))
+	downloadPath := hostPath
+	if i.Unzip {
+		downloadPath = path.Join(i.HostPath, downloadFile)
+	}
+
+	err := wget(i.Src, downloadPath)
 	if err != nil {
 		return err
 	}
 
-	err = os.Chmod(i.HostPath, fs.FileMode(i.Permission))
+	if i.Unzip {
+		err = unzip(downloadPath, hostPath)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = os.Chmod(hostPath, fs.FileMode(i.Permission))
 	if err != nil {
 		return err
 	}
 
-	err = os.Chown(i.HostPath, os.Getuid(), os.Getgid())
+	err = os.Chown(hostPath, os.Getuid(), os.Getgid())
 	return err
 }
 
@@ -85,4 +104,49 @@ func getDownloadItem(i any) (downloadItem, error) {
 
 	err = json.Unmarshal(jsonData, &item)
 	return item, err
+}
+
+func unzip(src, dst string) error {
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return err
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		rc, err := f.Open()
+		if err != nil {
+			return err
+		}
+		defer rc.Close()
+
+		fpath := filepath.Join(dst, f.Name)
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(fpath, f.Mode())
+		} else {
+			var fdir string
+			if lastIndex := strings.LastIndex(fpath, string(os.PathSeparator)); lastIndex > -1 {
+				fdir = fpath[:lastIndex]
+			}
+
+			err = os.MkdirAll(fdir, f.Mode())
+			if err != nil {
+				log.Fatal(err)
+				return err
+			}
+			f, err := os.OpenFile(
+				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if err != nil {
+				return err
+			}
+			defer f.Close()
+
+			_, err = io.Copy(f, rc)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+
 }
