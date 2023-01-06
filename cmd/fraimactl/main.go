@@ -25,7 +25,7 @@ func main() {
 
 	var configFile string
 	var skipKindList string
-	flag.StringVar(&configFile, "config", "", "path to dir with configs")
+	flag.StringVar(&configFile, "config", "/home/geo/projects/fraima/fraima/config-example.yaml", "path to dir with configs")
 	flag.StringVar(&skipKindList, "slip-kinds", "", `list of skipped kind
 supported kind:
 	KubeletService

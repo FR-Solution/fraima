@@ -18,7 +18,7 @@ import (
 type downloadItem struct {
 	Name       string `json:"name"`
 	Src        string `json:"src"`
-	HostPath   string `json:"hostpath"`
+	HostPath   string `json:"path"`
 	Permission int    `json:"permission"`
 	Unzip      unzip  `json:"unzip"`
 }
@@ -44,13 +44,13 @@ func downloading(d config.Instruction) error {
 
 		var data []byte
 		if item.Unzip.Status {
-			err = unzipFile(file)
+			err = unzipFile(item.Name, file)
 			if err != nil {
 				return err
 			}
 
 			for _, f := range item.Unzip.Files {
-				filePath := getDownloadDir(f)
+				filePath := getDownloadDir(item.Name, f)
 				data, err = os.ReadFile(filePath)
 				if err != nil {
 					return err
@@ -116,14 +116,14 @@ func download(src string) (io.ReadCloser, error) {
 	return resp.Body, err
 }
 
-func unzipFile(file io.Reader) error {
-	err := extract.Archive(context.Background(), file, getDownloadDir(""), nil)
+func unzipFile(component string, file io.Reader) error {
+	err := extract.Archive(context.Background(), file, getDownloadDir(component, ""), nil)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func getDownloadDir(filePath string) string {
-	return path.Join(os.TempDir(), "fraima", filePath)
+func getDownloadDir(component, filePath string) string {
+	return path.Join(os.TempDir(), "fraima", component, filePath)
 }

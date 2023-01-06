@@ -1,30 +1,12 @@
 - apiVersion: fraima.io/v1alpha
-  kind: DownloadConfiguration
+  kind: Downloading
   spec:
-    - name: kubectl
-      src: https://storage.googleapis.com/kubernetes-release/release/v1.23.12/bin/linux/amd64/kubectl
-      hostpath: /usr/local/bin/
-      permission: 0644
-
-    - name: crictl
-      src: https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.23.0/crictl-v1.23.0-linux-amd64.tar.gz
+    - name: cotainerd
+      src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz
       path: /tmp/test
       owner: root:root
       permissions: "0644"
       unzip:
         status: true
         files: 
-          - /internal/dir/bin-1
-
-- apiVersion: fraima.io/v1alpha
-  kind: ContainerdConfiguration
-  spec:
-    version: 2
-    plugins:
-      io.containerd.grpc.v1.cri:
-        containerd:
-          runtimes:
-            runc:
-              runtime_type: "io.containerd.runc.v2"
-              options:
-                SystemdCgroup: true
+          - bin/ctr
