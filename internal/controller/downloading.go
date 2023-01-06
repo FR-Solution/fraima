@@ -24,8 +24,8 @@ type downloadItem struct {
 }
 
 type unzip struct {
-	Status bool   `json:"status"`
-	Src    string `json:"src"`
+	Status bool     `json:"status"`
+	Files  []string `json:"files"`
 }
 
 var client http.Client
@@ -49,18 +49,28 @@ func downloading(d config.Instruction) error {
 				return err
 			}
 
-			filePath := path.Join(os.TempDir(), item.Unzip.Src, item.Name)
-			data, err = os.ReadFile(filePath)
+			for _, f := range item.Unzip.Files {
+				filePath := getDownloadDir(f)
+				data, err = os.ReadFile(filePath)
+				if err != nil {
+					return err
+				}
+
+				err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
+				if err != nil {
+					return err
+				}
+			}
 		} else {
 			data, err = ioutil.ReadAll(file)
-		}
-		if err != nil {
-			return err
-		}
+			if err != nil {
+				return err
+			}
 
-		err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
-		if err != nil {
-			return err
+			err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -107,10 +117,13 @@ func download(src string) (io.ReadCloser, error) {
 }
 
 func unzipFile(file io.Reader) error {
-	// change lib
-	err := extract.Archive(context.Background(), file, os.TempDir(), nil)
+	err := extract.Archive(context.Background(), file, getDownloadDir(""), nil)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func getDownloadDir(filePath string) string {
+	return path.Join(os.TempDir(), "fraima", filePath)
 }

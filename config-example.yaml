@@ -13,7 +13,8 @@
       permissions: "0644"
       unzip:
         status: true
-        src: /internal/dir/
+        files: 
+          - /internal/dir/bin-1
 
 - apiVersion: fraima.io/v1alpha
   kind: ContainerdConfiguration
