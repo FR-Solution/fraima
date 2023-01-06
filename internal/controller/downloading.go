@@ -1,17 +1,16 @@
 package controller
 
 import (
-	"archive/zip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/fs"
-	"log"
+	"io/ioutil"
+	"net/http"
 	"os"
-	"os/exec"
 	"path"
-	"path/filepath"
-	"strings"
+
+	"github.com/codeclysm/extract/v3"
 
 	"github.com/fraima/fraimactl/internal/config"
 )
@@ -21,8 +20,15 @@ type downloadItem struct {
 	Src        string `json:"src"`
 	HostPath   string `json:"hostpath"`
 	Permission int    `json:"permission"`
-	Unzip      bool   `json:"unzip"`
+	Unzip      unzip  `json:"unzip"`
 }
+
+type unzip struct {
+	Status bool   `json:"status"`
+	Src    string `json:"src"`
+}
+
+var client http.Client
 
 func downloading(d config.Instruction) error {
 	downloadList, err := getDownloadList(d.Spec)
@@ -30,48 +36,34 @@ func downloading(d config.Instruction) error {
 		return fmt.Errorf("get download list: %w", err)
 	}
 	for _, item := range downloadList {
-		err := download(item)
+		file, err := download(item.Src)
+		if err != nil {
+			return err
+		}
+		defer file.Close()
+
+		var data []byte
+		if item.Unzip.Status {
+			err = unzipFile(file)
+			if err != nil {
+				return err
+			}
+
+			filePath := path.Join(os.TempDir(), item.Unzip.Src, item.Name)
+			data, err = os.ReadFile(filePath)
+		} else {
+			data, err = ioutil.ReadAll(file)
+		}
+		if err != nil {
+			return err
+		}
+
+		err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
-}
-
-func download(i downloadItem) error {
-	downloadFile := path.Base(i.Src)
-	hostPath := path.Join(i.HostPath, downloadFile)
-
-	downloadPath := hostPath
-	if i.Unzip {
-		downloadPath = path.Join(i.HostPath, downloadFile)
-	}
-
-	err := wget(i.Src, downloadPath)
-	if err != nil {
-		return err
-	}
-
-	if i.Unzip {
-		err = unzip(downloadPath, hostPath)
-		if err != nil {
-			return err
-		}
-	}
-
-	err = os.Chmod(hostPath, fs.FileMode(i.Permission))
-	if err != nil {
-		return err
-	}
-
-	err = os.Chown(hostPath, os.Getuid(), os.Getgid())
-	return err
-}
-
-func wget(url, filepath string) error {
-	cmd := exec.Command("wget", url, "-O", filepath)
-	cmd.Run()
-	return cmd.Err
 }
 
 func getDownloadList(spec any) ([]downloadItem, error) {
@@ -106,47 +98,19 @@ func getDownloadItem(i any) (downloadItem, error) {
 	return item, err
 }
 
-func unzip(src, dst string) error {
-	r, err := zip.OpenReader(src)
+func download(src string) (io.ReadCloser, error) {
+	resp, err := client.Get(src)
+	if err != nil {
+		return nil, err
+	}
+	return resp.Body, err
+}
+
+func unzipFile(file io.Reader) error {
+	// change lib
+	err := extract.Archive(context.Background(), file, os.TempDir(), nil)
 	if err != nil {
 		return err
 	}
-	defer r.Close()
-
-	for _, f := range r.File {
-		rc, err := f.Open()
-		if err != nil {
-			return err
-		}
-		defer rc.Close()
-
-		fpath := filepath.Join(dst, f.Name)
-		if f.FileInfo().IsDir() {
-			os.MkdirAll(fpath, f.Mode())
-		} else {
-			var fdir string
-			if lastIndex := strings.LastIndex(fpath, string(os.PathSeparator)); lastIndex > -1 {
-				fdir = fpath[:lastIndex]
-			}
-
-			err = os.MkdirAll(fdir, f.Mode())
-			if err != nil {
-				log.Fatal(err)
-				return err
-			}
-			f, err := os.OpenFile(
-				fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-			if err != nil {
-				return err
-			}
-			defer f.Close()
-
-			_, err = io.Copy(f, rc)
-			if err != nil {
-				return err
-			}
-		}
-	}
 	return nil
-
 }
