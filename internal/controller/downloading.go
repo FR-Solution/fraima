@@ -56,7 +56,7 @@ func downloading(d config.Instruction) error {
 					return err
 				}
 
-				err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
+				err = createFile(path.Join(item.HostPath, path.Base(f)), data, item.Permission)
 				if err != nil {
 					return err
 				}
