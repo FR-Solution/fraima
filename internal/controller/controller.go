@@ -16,7 +16,7 @@ var kindCreator map[string]func(config.Instruction) error = map[string]func(conf
 	"Downloading":                downloading,
 }
 
-func Run(instructions []config.Instruction, skippingPhases map[string]struct{}) {
+func Run(instructions []config.Instruction, skippingPhases []string) {
 	for _, i := range instructions {
 		handler, isExist := kindCreator[i.Kind]
 		if !isExist {

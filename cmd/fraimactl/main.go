@@ -26,27 +26,16 @@ func main() {
 	var configFile string
 	var skipKindList string
 	flag.StringVar(&configFile, "config", "/home/geo/projects/fraima/fraima/config-example.yaml", "path to dir with configs")
-	flag.StringVar(&skipKindList, "slip-kinds", "", `list of skipped kind
-supported kind:
-	KubeletService
-	KubeletConfiguration
-	ContainerdService
-	ContainerdConfiguration
-	SysctlNetworkConfiguration
-	ModProbConfiguration`)
+	flag.StringVar(&skipKindList, "skip-phases", "", `list of skipped phases`)
 	flag.Parse()
 
 	if configFile == "" {
 		zap.L().Fatal("the path to the config file is not set")
 	}
 
-	skippingKind := make(map[string]struct{})
-	kindList := strings.Split(skipKindList, " ")
-	for _, k := range kindList {
-		skippingKind[k] = struct{}{}
-	}
+	skippingPhases := strings.Split(skipKindList, " ")
 
-	zap.L().Debug("configuration", zap.String("version", Version))
+	zap.L().Debug("configuration", zap.String("version", Version), zap.Strings("skipping phases", skippingPhases))
 
 	instructionList, err := config.GetInstructionList(configFile)
 	if err != nil {
@@ -55,7 +44,7 @@ supported kind:
 
 	zap.L().Info("started")
 
-	controller.Run(instructionList, skippingKind)
+	controller.Run(instructionList, skippingPhases)
 
 	zap.L().Info("goodbye")
 }

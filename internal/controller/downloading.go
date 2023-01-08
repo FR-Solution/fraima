@@ -2,30 +2,29 @@ package controller
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
 
 	"github.com/codeclysm/extract/v3"
+	"gopkg.in/yaml.v2"
 
 	"github.com/fraima/fraimactl/internal/config"
 )
 
 type downloadItem struct {
-	Name       string `json:"name"`
-	Src        string `json:"src"`
-	HostPath   string `json:"path"`
-	Permission int    `json:"permission"`
-	Unzip      unzip  `json:"unzip"`
+	Name       string `yaml:"name"`
+	Src        string `yaml:"src"`
+	HostPath   string `yaml:"path"`
+	Permission int    `yaml:"permission"`
+	Unzip      unzip  `yaml:"unzip"`
 }
 
 type unzip struct {
-	Status bool     `json:"status"`
-	Files  []string `json:"files"`
+	Status bool     `yaml:"status"`
+	Files  []string `yaml:"files"`
 }
 
 var client http.Client
@@ -61,16 +60,16 @@ func downloading(d config.Instruction) error {
 					return err
 				}
 			}
-		} else {
-			data, err = ioutil.ReadAll(file)
-			if err != nil {
-				return err
-			}
+			return nil
+		}
+		data, err = io.ReadAll(file)
+		if err != nil {
+			return err
+		}
 
-			err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
-			if err != nil {
-				return err
-			}
+		err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
+		if err != nil {
+			return err
 		}
 	}
 	return nil
@@ -99,12 +98,12 @@ func getDownloadItem(i any) (downloadItem, error) {
 		return item, err
 	}
 
-	jsonData, err := json.Marshal(itemMap)
+	yamlData, err := yaml.Marshal(itemMap)
 	if err != nil {
 		return item, err
 	}
 
-	err = json.Unmarshal(jsonData, &item)
+	err = yaml.Unmarshal(yamlData, &item)
 	return item, err
 }
 
