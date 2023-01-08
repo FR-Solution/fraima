@@ -18,6 +18,7 @@ type downloadItem struct {
 	Name       string `yaml:"name"`
 	Src        string `yaml:"src"`
 	HostPath   string `yaml:"path"`
+	Owner      string `yaml:"owner"`
 	Permission int    `yaml:"permission"`
 	Unzip      unzip  `yaml:"unzip"`
 }
@@ -55,7 +56,7 @@ func downloading(d config.Instruction) error {
 					return err
 				}
 
-				err = createFile(path.Join(item.HostPath, path.Base(f)), data, item.Permission)
+				err = createFile(path.Join(item.HostPath, path.Base(f)), data, item.Permission, item.Owner)
 				if err != nil {
 					return err
 				}
@@ -67,7 +68,7 @@ func downloading(d config.Instruction) error {
 			return err
 		}
 
-		err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
+		err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission, item.Owner)
 		if err != nil {
 			return err
 		}

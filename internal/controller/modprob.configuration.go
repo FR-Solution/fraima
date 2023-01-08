@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	//go:embed template/k8s.conf.tmpl
+	//go:embed template/modprobe.conf.tmpl
 	k8sConfigurationTemplateStr string
 	k8sConfigurationTemplate    = template.Must(template.New("k8s.conf-service").Parse(k8sConfigurationTemplateStr))
 )
@@ -27,7 +27,7 @@ func createModProbConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM)
+	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, "root:root")
 }
 
 func createModProbConfigurationData(cfg config.Instruction) ([]byte, error) {

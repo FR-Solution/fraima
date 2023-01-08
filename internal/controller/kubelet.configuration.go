@@ -1,11 +1,11 @@
 package controller
 
 import (
-	"encoding/json"
 	"fmt"
 	"unicode"
 
 	"github.com/irbgeo/go-structure"
+	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
@@ -39,7 +39,7 @@ func createKubletConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM)
+	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM, "root:root")
 }
 
 func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, error) {
@@ -48,7 +48,7 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 		return nil, err
 	}
 
-	jsonData, err := json.Marshal(eargs)
+	yamlData, err := yaml.Marshal(eargs)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 
 	kc.AddTags(getTag)
 
-	err = json.Unmarshal(jsonData, kc.Struct())
+	err = yaml.Unmarshal(yamlData, kc.Struct())
 	if err != nil {
 		return nil, err
 	}

@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/user"
 	"path"
+	"strconv"
+	"strings"
 )
 
-func createFile(filepath string, data []byte, perm int) error {
+func createFile(filepath string, data []byte, perm int, owner string) error {
 	dir := path.Dir(filepath)
-	if err := os.MkdirAll(dir, 0777); err != nil {
+	if err := os.MkdirAll(dir, fs.FileMode(perm)); err != nil {
 		return err
 	}
 
@@ -18,7 +21,37 @@ func createFile(filepath string, data []byte, perm int) error {
 		return err
 	}
 
-	err = os.Chown(filepath, os.Getuid(), os.Getgid())
+	ownerList := strings.Split(owner, ":")
+	if len(ownerList) != 2 {
+		err := fmt.Errorf("the owner <%s> is not correct, it must satisfy the mask '$userName:$groupName'", owner)
+		return err
+	}
+
+	group, err := user.LookupGroup(ownerList[1])
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	user, err := user.Lookup(ownerList[0])
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	userUid, err := strconv.Atoi(user.Uid)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	groupUid, err := strconv.Atoi(group.Gid)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return err
+	}
+
+	err = os.Chown(filepath, userUid, groupUid)
 	return err
 }
 
