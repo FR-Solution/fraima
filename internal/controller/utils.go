@@ -64,7 +64,7 @@ func getMap(i any) (map[string]any, error) {
 		return rArgs, err
 	}
 	for k, v := range args {
-		key := fmt.Sprint(k)
+		key := strings.ToLower(fmt.Sprint(k))
 		if nArgs, ok := v.(map[any]any); ok {
 			rArgs[key], err = getMap(nArgs)
 			if err != nil {
@@ -73,7 +73,7 @@ func getMap(i any) (map[string]any, error) {
 			continue
 		}
 		// fmt.Println(key, v)
-		if _, ok := v.(string); ok && strings.ToLower(key) == "duration" {
+		if _, ok := v.(string); ok && key == "duration" {
 			var err error
 			v, err = time.ParseDuration(v.(string))
 			if err != nil {
@@ -81,7 +81,7 @@ func getMap(i any) (map[string]any, error) {
 			}
 
 		}
-		rArgs[fmt.Sprint(k)] = v
+		rArgs[key] = v
 	}
 	return rArgs, nil
 }

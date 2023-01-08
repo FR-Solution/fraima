@@ -1,0 +1,46 @@
+- apiVersion: kubelet.config.k8s.io/v1beta1
+  kind: KubeletConfiguration
+  spec:
+    containerLogMaxSize: 50Mi
+    maxPods: 250
+    kubeAPIQPS: 50
+    kubeAPIBurst: 100
+    podPidsLimit: 4096
+    serializeImagePulls: false
+    systemReserved:
+      ephemeral-storage: 1Gi
+    featureGates:
+      RotateKubeletServerCertificate: true
+      APIPriorityAndFairness: true
+      DownwardAPIHugePages: true
+      PodSecurity: true
+      CSIMigrationAWS: false
+      CSIMigrationAzureFile: false
+      CSIMigrationGCE: false
+      CSIMigrationvSphere: false
+    rotateCertificates: false
+    serverTLSBootstrap: true
+    tlsMinVersion: VersionTLS12
+    tlsCipherSuites:
+      - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+      - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+      - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+      - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+    allowedUnsafeSysctls:
+      - "net.core.somaxconn"
+    evictionSoft:
+      memory.available: 3Gi
+      nodefs.available: 25%
+      nodefs.inodesFree: 15%
+      imagefs.available: 30%
+      imagefs.inodesFree: 25%
+    evictionHard:
+      memory.available: 2Gi
+      nodefs.available: 20%
+      nodefs.inodesFree: 10%
+      imagefs.available: 25%
+      imagefs.inodesFree: 15%
+    imageGCHighThresholdPercent: 55
+    imageGCLowThresholdPercent: 50

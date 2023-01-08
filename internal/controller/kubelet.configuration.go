@@ -2,7 +2,7 @@ package controller
 
 import (
 	"fmt"
-	"unicode"
+	"strings"
 
 	"github.com/irbgeo/go-structure"
 	"gopkg.in/yaml.v2"
@@ -73,9 +73,5 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 }
 
 func getTag(fieldName, fieldTag string) string {
-	for i, v := range fieldName {
-		tagValue := string(unicode.ToLower(v)) + fieldName[i+1:]
-		return fmt.Sprintf(`yaml:"%s"`, tagValue)
-	}
-	return ""
+	return strings.ToLower(fieldName)
 }
