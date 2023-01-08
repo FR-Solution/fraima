@@ -101,6 +101,7 @@
 - apiVersion: fraima.io/v1alpha
   kind: KubeletService
   spec:
+    # Number for the log level verbosity
     v: 2
     # The directory where the TLS certs are located. 
     # If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored.
@@ -145,6 +146,9 @@
 - apiVersion: fraima.io/v1alpha
   kind: ContainerdService
   spec:
+    # This document provides the description of the CRI plugin configuration. 
+    # The CRI plugin config is part of the containerd config
+    # Default: /etc/containerd/config.toml
     config: /etc/kubernetes/containerd/config.toml
 
 - apiVersion: kubelet.config.k8s.io/v1beta1
