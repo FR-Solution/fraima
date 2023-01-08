@@ -5,7 +5,15 @@ After=network.target
 
 [Service]
 ExecStartPre=/sbin/modprobe overlay
-ExecStart=/usr/bin/containerd --config=/etc/kubernetes/containerd/config.toml
+ExecStart=/usr/bin/containerd
+{{- range $key, $value := . -}}
+    {{ " " }}
+    {{- if eq $value "" -}}
+    --{{ $key }}
+    {{- else -}}
+    --{{ $key }}={{ $value }} 
+    {{- end -}}
+{{- end }}
 Restart=always
 RestartSec=5
 Delegate=yes
