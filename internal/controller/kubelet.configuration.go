@@ -53,6 +53,8 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 		return nil, err
 	}
 
+	fmt.Printf("%s\n", yamlData)
+
 	kc, err := structure.New(new(kubeletconfig.KubeletConfiguration))
 	if err != nil {
 		return nil, err
@@ -73,7 +75,7 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 func getTag(fieldName, fieldTag string) string {
 	for i, v := range fieldName {
 		tagValue := string(unicode.ToLower(v)) + fieldName[i+1:]
-		return fmt.Sprintf(`json:"%s"`, tagValue)
+		return fmt.Sprintf(`yaml:"%s"`, tagValue)
 	}
 	return ""
 }

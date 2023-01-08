@@ -61,7 +61,7 @@ func downloading(d config.Instruction) error {
 					return err
 				}
 			}
-			return nil
+			continue
 		}
 		data, err = io.ReadAll(file)
 		if err != nil {
