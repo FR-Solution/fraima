@@ -26,31 +26,6 @@
         files: 
           - "crictl"
 
-    - name: cni
-      src: https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
-      path: /opt/cni/bin
-      owner: root:root
-      permission: 0645
-      unzip:
-        status: true
-        files: 
-          - "./bandwidth"
-          - "./bridge"
-          - "./dhcp"
-          - "./firewall"
-          - "./host-device"
-          - "./host-local"
-          - "./ipvlan"
-          - "./loopback"
-          - "./macvlan"
-          - "./portmap"
-          - "./ptp"
-          - "./sbr"
-          - "./static"
-          - "./tuning"
-          - "./vlan"
-          - "./vrf"
-
     - name: etcdctl
       src: https://github.com/etcd-io/etcd/releases/download/v3.5.5/etcd-v3.5.5-linux-amd64.tar.gz
       path: /usr/bin/
