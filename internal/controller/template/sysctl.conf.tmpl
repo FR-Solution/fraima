@@ -1,7 +1,7 @@
-{{- range $key, $value := . -}}
-    {{- if eq $value "" -}}
-    {{ $key }}
-    {{- else -}}
-    {{ $key }}={{ $value }} 
-    {{- end -}}
-{{- end }}
+{{ range $key, $value := . }}
+{{- if eq $value "" }}
+{{- $key -}}
+{{- else }}
+{{- $key }}={{ $value -}} 
+{{ end }}
+{{ end }}

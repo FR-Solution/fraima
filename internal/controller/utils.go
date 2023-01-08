@@ -12,7 +12,7 @@ import (
 
 func createFile(filepath string, data []byte, perm int, owner string) error {
 	dir := path.Dir(filepath)
-	if err := os.MkdirAll(dir, 0777); err != nil {
+	if err := os.MkdirAll(dir, fs.FileMode(perm)); err != nil {
 		return err
 	}
 
