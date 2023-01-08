@@ -27,7 +27,7 @@ func createContainerdService(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(containerdServiceFilePath, data, containerdServiceFilePERM)
+	return createFile(containerdServiceFilePath, data, containerdServiceFilePERM, "root:root")
 }
 
 func createContainerdServiceData(cfg config.Instruction) ([]byte, error) {

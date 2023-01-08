@@ -20,7 +20,7 @@ func createContainerdConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(containerdConfigurationFilePath, data, containerdConfigurationFilePERM)
+	return createFile(containerdConfigurationFilePath, data, containerdConfigurationFilePERM, "root:root")
 }
 
 func createContainerdConfigurationData(cfg config.Instruction) ([]byte, error) {

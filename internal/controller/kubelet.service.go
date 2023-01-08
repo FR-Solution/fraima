@@ -27,7 +27,7 @@ func createKubletService(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(kubeletServiceFilePath, data, kubeletServiceFilePERM)
+	return createFile(kubeletServiceFilePath, data, kubeletServiceFilePERM, "root:root")
 }
 
 func createKubleteServiceData(cfg config.Instruction) ([]byte, error) {

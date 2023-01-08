@@ -19,6 +19,7 @@ type downloadItem struct {
 	Name       string `json:"name"`
 	Src        string `json:"src"`
 	HostPath   string `json:"path"`
+	Owner      string `json:"owner"`
 	Permission int    `json:"permission"`
 	Unzip      unzip  `json:"unzip"`
 }
@@ -56,7 +57,7 @@ func downloading(d config.Instruction) error {
 					return err
 				}
 
-				err = createFile(path.Join(item.HostPath, path.Base(f)), data, item.Permission)
+				err = createFile(path.Join(item.HostPath, path.Base(f)), data, item.Permission, item.Owner)
 				if err != nil {
 					return err
 				}
@@ -67,7 +68,7 @@ func downloading(d config.Instruction) error {
 				return err
 			}
 
-			err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission)
+			err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission, item.Owner)
 			if err != nil {
 				return err
 			}
