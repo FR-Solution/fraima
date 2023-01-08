@@ -102,14 +102,44 @@
   kind: KubeletService
   spec:
     v: 2
+    # The directory where the TLS certs are located. 
+    # If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored.
+    # Default: /var/lib/kubelet/pki
     cert-dir: /etc/kubernetes/pki/certs/kubelet
+    # The Kubelet will load its initial configuration from this file. 
+    # The path may be absolute or relative; relative paths start at the Kubelet's current working directory. 
+    # Omit this flag to use the built-in default configuration values. 
+    # Command-line flags override configuration from this file.
     config: /etc/kubernetes/kubelet/config.yaml
+    # Directory path for managing kubelet files (volume mounts, etc).
+    # Default: /var/lib/kubelet
     root-dir: /var/lib/kubelet
+    # Path to a kubeconfig file, specifying how to connect to the API server. 
+    # Providing --kubeconfig enables API server mode, omitting --kubeconfig enables standalone mode.
     kubeconfig: /etc/kubernetes/kubelet/kubeconfig
+    # Path to a kubeconfig file that will be used to get client certificate for kubelet. 
+    # If the file specified by --kubeconfig does not exist, 
+    # the bootstrap kubeconfig is used to request a client certificate from the API server. 
+    # On success, a kubeconfig file referencing the generated client certificate and key is written to the path specified by --kubeconfig. 
+    # The client certificate and key file will be stored in the directory pointed by --cert-dir.
     bootstrap-kubeconfig: /etc/kubernetes/kubelet/bootstrap-kubeconfig
+    # The container runtime to use. Possible values: docker, remote. 
+    # (DEPRECATED: will be removed in 1.27 as the only valid value is 'remote')
+    # Default: remote
     container-runtime: remote
+    # The endpoint of remote runtime service. Unix Domain Sockets are supported on Linux, 
+    # while npipe and tcp endpoints are supported on windows. 
+    # Examples: unix:///path/to/runtime.sock, npipe:////./pipe/runtime.
     container-runtime-endpoint: /run/containerd/containerd.sock
+    # Specified image will not be pruned by the image garbage collector. 
+    # When container-runtime is set to docker, all containers in each pod will use the network/IPC namespaces from this image. 
+    # Other CRI implementations have their own configuration to set this image.
+    # Default: registry.k8s.io/pause:3.6
     pod-infra-container-image: k8s.gcr.io/pause:3.6
+    # The provider for cloud services. Set to empty string for running with no cloud provider.
+    # If set, the cloud provider determines the name of the node (consult cloud provider documentation to determine 
+    # if and how the hostname is used). 
+    # (DEPRECATED: will be removed in 1.24 or later, in favor of removing cloud provider code from Kubelet.)
     cloud-provider: external
 
 - apiVersion: fraima.io/v1alpha
