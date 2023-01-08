@@ -7,13 +7,13 @@ import (
 )
 
 var kindCreator map[string]func(config.Instruction) error = map[string]func(config.Instruction) error{
-	"KubeletService":             createKubletService,
-	"KubeletConfiguration":       createKubletConfiguration,
-	"ContainerdService":          createContainerdService,
-	"ContainerdConfiguration":    createContainerdConfiguration,
-	"SysctlNetworkConfiguration": createSysctlNetworkConfiguration,
-	"ModProbConfiguration":       createModProbConfiguration,
-	"Downloading":                downloading,
+	"KubeletService":          createKubletService,
+	"KubeletConfiguration":    createKubletConfiguration,
+	"ContainerdService":       createContainerdService,
+	"ContainerdConfiguration": createContainerdConfiguration,
+	"SysctlConfiguration":     createSysctlConfiguration,
+	"ModProbConfiguration":    createModProbConfiguration,
+	"DownloadConfiguration":   downloading,
 }
 
 func Run(instructions []config.Instruction, skippingPhases map[string]struct{}) {

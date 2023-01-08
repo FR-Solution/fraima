@@ -39,7 +39,7 @@ func createKubletConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM)
+	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM, "root:root")
 }
 
 func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, error) {

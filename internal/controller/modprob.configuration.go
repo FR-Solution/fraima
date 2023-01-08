@@ -27,7 +27,7 @@ func createModProbConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM)
+	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, "root:root")
 }
 
 func createModProbConfigurationData(cfg config.Instruction) ([]byte, error) {
