@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -20,7 +21,12 @@ func createFile(filepath string, data []byte, perm int, owner string) error {
 	if err != nil {
 		return err
 	}
+
 	ownerList := strings.Split(owner, ":")
+	if len(ownerList) != 2 {
+		err := fmt.Sprintf("The owner <%s> is not correct, it must satisfy the mask '$userName:$groupName'", owner)
+		return errors.New(err)
+	}
 
 	group, err := user.LookupGroup(ownerList[1])
 	if err != nil {
