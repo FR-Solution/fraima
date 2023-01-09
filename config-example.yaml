@@ -81,19 +81,27 @@
         containerd:
           runtimes:
             runc:
+              # Runtime v2 introduces a first class shim API for runtime authors to integrate with containerd. 
+              # The shim API is minimal and scoped to the execution lifecycle of a container.
               runtime_type: "io.containerd.runc.v2"
               options:
+                # While containerd and Kubernetes use the legacy cgroupfs driver for managing cgroups by default, 
+                # it is recommended to use the systemd driver on systemd-based hosts for compliance of the "single-writer" rule of cgroups. 
+                # To configure containerd to use the systemd driver, set the following option:
                 SystemdCgroup: true
 
 - apiVersion: fraima.io/v1alpha
   kind: SysctlConfiguration
   spec:
-    net.bridge.bridge-nf-call-iptables: 1
-    net.bridge.bridge-nf-call-ip6tables: 1
+    # If the sysctl net.ipv4.ip_forward is set to 0 (disabled) on a Linux host, then IPv4 packet forwarding is disabled.
+    # As a result, on a Kubernetes nodes this will prevent Pod networking from functioning.
+    # You can confirm the current value of this sysctl on a Linux host, if you are experiencing a network issue, with the following:
+    # sysctl net.ipv4.ip_forward
+    # The output should show 1, for enabled.
     net.ipv4.ip_forward: 1
 
 - apiVersion: fraima.io/v1alpha
-  kind: ModProbConfiguration
+  kind: ModProbeConfiguration
   spec:
     - br_netfilter
     - overlay
@@ -163,7 +171,7 @@
       # Default: enabled: true
       webhook:
         # Default: cacheTTL: "2m"
-        cacheTTL: "30s"
+        cacheTTL: 30s
       x509:
         clientCAFile: "/etc/kubernetes/pki/ca/kubernetes-ca.pem"
     # authorization specifies how requests to the Kubelet's server are authorized. 
