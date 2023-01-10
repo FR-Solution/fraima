@@ -42,5 +42,6 @@
       nodefs.inodesFree: 10%
       imagefs.available: 25%
       imagefs.inodesFree: 15%
+    evictionPressureTransitionPeriod: 5s
     imageGCHighThresholdPercent: 55
     imageGCLowThresholdPercent: 50

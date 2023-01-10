@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/irbgeo/go-structure"
@@ -53,14 +52,12 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 		return nil, err
 	}
 
-	fmt.Printf("%s\n", yamlData)
-
 	kc, err := structure.New(new(kubeletconfig.KubeletConfiguration))
 	if err != nil {
 		return nil, err
 	}
 
-	kc.AddTags(getTag)
+	kc.ChangeTags(getTag)
 
 	err = yaml.Unmarshal(yamlData, kc.Struct())
 	if err != nil {
@@ -72,6 +69,18 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 	return cfg, err
 }
 
-func getTag(fieldName, fieldTag string) string {
-	return strings.ToLower(fieldName)
+var prevFieldName string
+
+func getTag(fieldName, fieldTag, fieldType string) string {
+	if strings.ToLower(fieldType) == "duration" && strings.ToLower(fieldName) != "duration" {
+		prevFieldName = fieldName
+		return `yaml:",inline"`
+	}
+	if strings.Contains(fieldTag, "name=duration") {
+		return strings.ToLower(prevFieldName)
+	}
+	if fieldTag == "" {
+		return strings.ToLower(fieldName)
+	}
+	return ""
 }

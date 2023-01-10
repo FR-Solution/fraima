@@ -8,7 +8,6 @@ import (
 	"path"
 	"strconv"
 	"strings"
-	"time"
 )
 
 func createFile(filepath string, data []byte, perm int, owner string) error {
@@ -72,15 +71,7 @@ func getMap(i any) (map[string]any, error) {
 			}
 			continue
 		}
-		// fmt.Println(key, v)
-		if _, ok := v.(string); ok && key == "duration" {
-			var err error
-			v, err = time.ParseDuration(v.(string))
-			if err != nil {
-				return nil, err
-			}
 
-		}
 		rArgs[key] = v
 	}
 	return rArgs, nil

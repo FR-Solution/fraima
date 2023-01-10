@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/codeclysm/extract/v3 v3.1.0
-	github.com/irbgeo/go-structure v1.0.1-0.20230102124734-068d3cb53dfe
+	github.com/irbgeo/go-structure v1.1.0
 	github.com/pelletier/go-toml v1.9.3
 	go.uber.org/zap v1.24.0
 	gopkg.in/yaml.v2 v2.4.0
