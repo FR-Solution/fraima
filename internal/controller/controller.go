@@ -12,7 +12,7 @@ var kindCreator map[string]func(config.Instruction) error = map[string]func(conf
 	"ContainerdService":       createContainerdService,
 	"ContainerdConfiguration": createContainerdConfiguration,
 	"SysctlConfiguration":     createSysctlConfiguration,
-	"ModProbConfiguration":    createModProbConfiguration,
+	"ModProbeConfiguration":   createModProbeConfiguration,
 	"DownloadConfiguration":   downloading,
 }
 
