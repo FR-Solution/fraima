@@ -1,39 +1,19 @@
 package controller
 
 import (
-	"strings"
-
-	"github.com/irbgeo/go-structure"
-	"gopkg.in/yaml.v2"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	kubeletconfig "k8s.io/kubernetes/pkg/kubelet/apis/config"
-	"k8s.io/kubernetes/pkg/kubelet/kubeletconfig/util/codec"
+	"k8s.io/kubelet/config/v1beta1"
+	"sigs.k8s.io/yaml"
 
 	"github.com/fraima/fraimactl/internal/config"
 )
 
 const (
-	kubeletConfigurationFilePath = "/etc/kubernetes/kubelet/config.yaml"
+	kubeletConfigurationFilePath = "./config.yaml"
 	kubeletConfigurationFilePERM = 0644
 )
 
 func createKubletConfiguration(cfg config.Instruction) error {
-	groupVersion, err := schema.ParseGroupVersion(cfg.APIVersion)
-	if err != nil {
-		return err
-	}
-
-	kubeletConfiguration, err := getKubeletConfiguration(cfg.Spec)
-	if err != nil {
-		return err
-	}
-	kubeletConfiguration.TypeMeta = metav1.TypeMeta{
-		Kind:       cfg.Kind,
-		APIVersion: cfg.APIVersion,
-	}
-
-	data, err := codec.EncodeKubeletConfig(kubeletConfiguration, groupVersion)
+	data, err := getKubeletConfigurationData(cfg.APIVersion, cfg.Spec)
 	if err != nil {
 		return err
 	}
@@ -41,7 +21,7 @@ func createKubletConfiguration(cfg config.Instruction) error {
 	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM, "root:root")
 }
 
-func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, error) {
+func getKubeletConfigurationData(apiVersion string, spec any) ([]byte, error) {
 	eargs, err := getMap(spec)
 	if err != nil {
 		return nil, err
@@ -52,35 +32,15 @@ func getKubeletConfiguration(spec any) (*kubeletconfig.KubeletConfiguration, err
 		return nil, err
 	}
 
-	kc, err := structure.New(new(kubeletconfig.KubeletConfiguration))
+	cfg := new(v1beta1.KubeletConfiguration)
+	err = yaml.Unmarshal(yamlData, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	kc.ChangeTags(getTag)
+	cfg.APIVersion = apiVersion
+	cfg.Kind = "KubeletConfiguration"
 
-	err = yaml.Unmarshal(yamlData, kc.Struct())
-	if err != nil {
-		return nil, err
-	}
-
-	cfg := new(kubeletconfig.KubeletConfiguration)
-	err = kc.SaveInto(cfg)
-	return cfg, err
-}
-
-var prevFieldName string
-
-func getTag(fieldName, fieldTag, fieldType string) string {
-	if strings.ToLower(fieldType) == "duration" && strings.ToLower(fieldName) != "duration" {
-		prevFieldName = fieldName
-		return `yaml:",inline"`
-	}
-	if strings.Contains(fieldTag, "name=duration") {
-		return strings.ToLower(prevFieldName)
-	}
-	if fieldTag == "" {
-		return strings.ToLower(fieldName)
-	}
-	return ""
+	data, err := yaml.Marshal(cfg)
+	return data, err
 }
