@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"bytes"
 	"context"
+	"crypto/sha256"
 	"fmt"
 	"io"
 	"net/http"
@@ -15,12 +17,13 @@ import (
 )
 
 type downloadItem struct {
-	Name       string `yaml:"name"`
-	Src        string `yaml:"src"`
-	HostPath   string `yaml:"path"`
-	Owner      string `yaml:"owner"`
-	Permission int    `yaml:"permission"`
-	Unzip      unzip  `yaml:"unzip"`
+	Name           string `yaml:"name"`
+	Src            string `yaml:"src"`
+	SrcCheckSum256 string `yaml:"src256"`
+	HostPath       string `yaml:"path"`
+	Owner          string `yaml:"owner"`
+	Permission     int    `yaml:"permission"`
+	Unzip          unzip  `yaml:"unzip"`
 }
 
 type unzip struct {
@@ -35,12 +38,21 @@ func downloading(d config.Instruction) error {
 	if err != nil {
 		return fmt.Errorf("get download list: %w", err)
 	}
+
 	for _, item := range downloadList {
 		file, err := download(item.Src)
 		if err != nil {
 			return err
 		}
-		defer file.Close()
+
+		fileCheckSum, err := download(item.SrcCheckSum256)
+		if err != nil {
+			return err
+		}
+
+		if check(file, fileCheckSum) {
+			return fmt.Errorf("the file was downloaded incorrectly")
+		}
 
 		var data []byte
 		if item.Unzip.Status {
@@ -63,12 +75,8 @@ func downloading(d config.Instruction) error {
 			}
 			continue
 		}
-		data, err = io.ReadAll(file)
-		if err != nil {
-			return err
-		}
 
-		err = createFile(path.Join(item.HostPath, item.Name), data, item.Permission, item.Owner)
+		err = createFile(path.Join(item.HostPath, item.Name), file, item.Permission, item.Owner)
 		if err != nil {
 			return err
 		}
@@ -108,16 +116,28 @@ func getDownloadItem(i any) (downloadItem, error) {
 	return item, err
 }
 
-func download(src string) (io.ReadCloser, error) {
+func download(src string) ([]byte, error) {
 	resp, err := client.Get(src)
 	if err != nil {
 		return nil, err
 	}
-	return resp.Body, err
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
-func unzipFile(component string, file io.Reader) error {
-	err := extract.Archive(context.Background(), file, getDownloadDir(component, ""), nil)
+func check(file, fileCheckSum []byte) bool {
+	sum := sha256.Sum256(file)
+	return bytes.Equal(sum[:], fileCheckSum)
+}
+
+func unzipFile(component string, data []byte) error {
+	reader := bytes.NewReader(data)
+	err := extract.Archive(context.Background(), reader, getDownloadDir(component, ""), nil)
 	if err != nil {
 		return err
 	}
