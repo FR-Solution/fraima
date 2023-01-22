@@ -20,7 +20,7 @@ import (
 type downloadItem struct {
 	Name       string   `yaml:"name"`
 	Src        string   `yaml:"src"`
-	CheckSum   checkSum `yaml:"check_sum"`
+	CheckSum   checkSum `yaml:"checkSum"`
 	HostPath   string   `yaml:"path"`
 	Owner      string   `yaml:"owner"`
 	Permission int      `yaml:"permission"`
