@@ -3,6 +3,9 @@
   spec:
     - name: cotainerd
       src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz
+      check_sum:
+        src: "path"
+        type: "sha256|md5"
       path: /usr/bin/
       owner: root:root
       permission: 0645

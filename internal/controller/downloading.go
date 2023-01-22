@@ -3,6 +3,7 @@ package controller
 import (
 	"bytes"
 	"context"
+	"crypto/md5"
 	"crypto/sha256"
 	"fmt"
 	"io"
@@ -17,18 +18,23 @@ import (
 )
 
 type downloadItem struct {
-	Name           string `yaml:"name"`
-	Src            string `yaml:"src"`
-	SrcCheckSum256 string `yaml:"src256"`
-	HostPath       string `yaml:"path"`
-	Owner          string `yaml:"owner"`
-	Permission     int    `yaml:"permission"`
-	Unzip          unzip  `yaml:"unzip"`
+	Name       string   `yaml:"name"`
+	Src        string   `yaml:"src"`
+	CheckSum   checkSum `yaml:"check_sum"`
+	HostPath   string   `yaml:"path"`
+	Owner      string   `yaml:"owner"`
+	Permission int      `yaml:"permission"`
+	Unzip      unzip    `yaml:"unzip"`
 }
 
 type unzip struct {
 	Status bool     `yaml:"status"`
 	Files  []string `yaml:"files"`
+}
+
+type checkSum struct {
+	Src  string `yaml:"src"`
+	Type string `yaml:"type"`
 }
 
 var client http.Client
@@ -45,12 +51,12 @@ func downloading(d config.Instruction) error {
 			return err
 		}
 
-		fileCheckSum, err := download(item.SrcCheckSum256)
+		fileCheckSum, err := download(item.CheckSum.Src)
 		if err != nil {
 			return err
 		}
 
-		if check(file, fileCheckSum) {
+		if check(file, fileCheckSum, item.CheckSum.Type) {
 			return fmt.Errorf("the file was downloaded incorrectly")
 		}
 
@@ -130,9 +136,17 @@ func download(src string) ([]byte, error) {
 	return data, nil
 }
 
-func check(file, fileCheckSum []byte) bool {
-	sum := sha256.Sum256(file)
-	return bytes.Equal(sum[:], fileCheckSum)
+func check(file, fileCheckSum []byte, checkSumType string) bool {
+	switch checkSumType {
+	case "sha256":
+		sum := sha256.Sum256(file)
+		bytes.Equal(sum[:], fileCheckSum)
+	case "md5":
+		sum := md5.Sum(file)
+		bytes.Equal(sum[:], fileCheckSum)
+	}
+
+	return false
 }
 
 func unzipFile(component string, data []byte) error {
