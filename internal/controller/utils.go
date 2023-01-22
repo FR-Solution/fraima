@@ -63,7 +63,7 @@ func getMap(i any) (map[string]any, error) {
 		return rArgs, err
 	}
 	for k, v := range args {
-		key := strings.ToLower(fmt.Sprint(k))
+		key := fmt.Sprint(k)
 		if nArgs, ok := v.(map[any]any); ok {
 			rArgs[key], err = getMap(nArgs)
 			if err != nil {

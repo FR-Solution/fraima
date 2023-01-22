@@ -26,7 +26,7 @@ func main() {
 	var configFile string
 	var skipKindList string
 	// TODO: clear
-	flag.StringVar(&configFile, "config", "/home/geo/projects/fraima/fraima/config-debug.yaml", "path to dir with configs")
+	flag.StringVar(&configFile, "config", "/home/irbgeo/projects/fraima/fraima/config-debug.yaml", "path to dir with configs")
 	flag.StringVar(&skipKindList, "skip-phases", "", `list of skipped phases`)
 	flag.Parse()
 
