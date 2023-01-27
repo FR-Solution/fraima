@@ -18,13 +18,13 @@ import (
 )
 
 type downloadItem struct {
-	Name       string   `yaml:"name"`
-	Src        string   `yaml:"src"`
-	CheckSum   checkSum `yaml:"checkSum"`
-	HostPath   string   `yaml:"path"`
-	Owner      string   `yaml:"owner"`
-	Permission int      `yaml:"permission"`
-	Unzip      unzip    `yaml:"unzip"`
+	Name       string    `yaml:"name"`
+	Src        string    `yaml:"src"`
+	CheckSum   *checkSum `yaml:"checkSum"`
+	HostPath   string    `yaml:"path"`
+	Owner      string    `yaml:"owner"`
+	Permission int       `yaml:"permission"`
+	Unzip      unzip     `yaml:"unzip"`
 }
 
 type unzip struct {
@@ -51,41 +51,43 @@ func downloading(d config.Instruction) error {
 			return err
 		}
 
-		fileCheckSum, err := download(item.CheckSum.Src)
-		if err != nil {
-			return err
+		if item.CheckSum != nil {
+			fileCheckSum, err := download(item.CheckSum.Src)
+			if err != nil {
+				return err
+			}
+
+			if check(file, fileCheckSum, item.CheckSum.Type) {
+				return fmt.Errorf("the file was downloaded incorrectly")
+			}
 		}
 
-		if check(file, fileCheckSum, item.CheckSum.Type) {
-			return fmt.Errorf("the file was downloaded incorrectly")
-		}
-
-		var data []byte
+		// var data []byte
 		if item.Unzip.Status {
 			err = unzipFile(item.Name, file)
 			if err != nil {
 				return err
 			}
 
-			for _, f := range item.Unzip.Files {
-				filePath := getDownloadDir(item.Name, f)
-				data, err = os.ReadFile(filePath)
-				if err != nil {
-					return err
-				}
+			// for _, f := range item.Unzip.Files {
+			// 	filePath := getDownloadDir(item.Name, f)
+			// 	data, err = os.ReadFile(filePath)
+			// 	if err != nil {
+			// 		return err
+			// 	}
 
-				err = createFile(path.Join(item.HostPath, path.Base(f)), data, item.Permission, item.Owner)
-				if err != nil {
-					return err
-				}
-			}
+			// 	err = createFile(path.Join(item.HostPath, path.Base(f)), data, item.Permission, item.Owner)
+			// 	if err != nil {
+			// 		return err
+			// 	}
+			// }
 			continue
 		}
 
-		err = createFile(path.Join(item.HostPath, item.Name), file, item.Permission, item.Owner)
-		if err != nil {
-			return err
-		}
+		// err = createFile(path.Join(item.HostPath, item.Name), file, item.Permission, item.Owner)
+		// if err != nil {
+		// 	return err
+		// }
 	}
 	return nil
 }

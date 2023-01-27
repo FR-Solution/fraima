@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	_ "embed"
-	"fmt"
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
@@ -16,6 +15,7 @@ var (
 )
 
 const (
+	kubeletServiceName     = "kubelet"
 	kubeletServiceFilePath = "/etc/systemd/system/kubelet.service"
 	kubeletServiceFilePERM = 0644
 )
@@ -27,22 +27,22 @@ func createKubletService(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(kubeletServiceFilePath, data, kubeletServiceFilePERM, "root:root")
+	err = createFile(kubeletServiceFilePath, data, kubeletServiceFilePERM, "root:root")
+	if err != nil {
+		return err
+	}
+
+	err = startService(kubeletServiceName)
+	return err
 }
 
 func createKubleteServiceData(cfg config.Instruction) ([]byte, error) {
-	extraArgs := make(map[string]string)
-	if cfg.Spec != nil {
-		args, ok := cfg.Spec.(map[any]any)
-		if !ok {
-			return nil, fmt.Errorf("args converting is not available")
-		}
-		for k, v := range args {
-			extraArgs[fmt.Sprint(k)] = fmt.Sprint(v)
-		}
+	eargs, err := getMap(cfg.Spec)
+	if err != nil {
+		return nil, err
 	}
 
 	kubletServiceBuffer := new(bytes.Buffer)
-	err := kubeletTemplate.Execute(kubletServiceBuffer, extraArgs)
+	err = kubeletTemplate.Execute(kubletServiceBuffer, eargs)
 	return kubletServiceBuffer.Bytes(), err
 }

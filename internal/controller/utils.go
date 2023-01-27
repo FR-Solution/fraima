@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"os/exec"
 	"os/user"
 	"path"
 	"strconv"
@@ -75,4 +76,20 @@ func getMap(i any) (map[string]any, error) {
 		rArgs[key] = v
 	}
 	return rArgs, nil
+}
+
+func startService(name string) error {
+	err := exec.Command("systemctl", "enable", fmt.Sprintf("%s.service", name)).Run()
+	if err != nil {
+		return err
+	}
+	err = exec.Command("systemctl", "start", fmt.Sprintf("%s.service", name)).Run()
+	if err != nil {
+		return err
+	}
+	err = exec.Command("systemctl", "daemon-reload").Run()
+	if err != nil {
+		return err
+	}
+	return nil
 }

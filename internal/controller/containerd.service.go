@@ -3,7 +3,6 @@ package controller
 import (
 	"bytes"
 	_ "embed"
-	"fmt"
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
@@ -16,33 +15,34 @@ var (
 )
 
 const (
+	containerdServiceName     = "containerd"
 	containerdServiceFilePath = "/etc/systemd/system/containerd.service"
 	containerdServiceFilePERM = 0644
 )
 
 // createContainerdService create containerd.service file.
 func createContainerdService(cfg config.Instruction) error {
-	data, err := createContainerdServiceData(cfg)
+	data, err := createContainerdServiceData(cfg.Spec)
 	if err != nil {
 		return err
 	}
 
-	return createFile(containerdServiceFilePath, data, containerdServiceFilePERM, "root:root")
+	err = createFile(containerdServiceFilePath, data, containerdServiceFilePERM, "root:root")
+	if err != nil {
+		return err
+	}
+
+	err = startService(containerdServiceName)
+	return err
 }
 
-func createContainerdServiceData(cfg config.Instruction) ([]byte, error) {
-	extraArgs := make(map[string]string)
-	if cfg.Spec != nil {
-		args, ok := cfg.Spec.(map[any]any)
-		if !ok {
-			return nil, fmt.Errorf("args converting is not available")
-		}
-		for k, v := range args {
-			extraArgs[fmt.Sprint(k)] = fmt.Sprint(v)
-		}
+func createContainerdServiceData(spec any) ([]byte, error) {
+	eargs, err := getMap(spec)
+	if err != nil {
+		return nil, err
 	}
 
 	containerdServiceBuffer := new(bytes.Buffer)
-	err := containerdServiceTemplate.Execute(containerdServiceBuffer, extraArgs)
+	err = containerdServiceTemplate.Execute(containerdServiceBuffer, eargs)
 	return containerdServiceBuffer.Bytes(), err
 }

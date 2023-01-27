@@ -3,7 +3,7 @@ package controller
 import (
 	"bytes"
 	_ "embed"
-	"fmt"
+	"os/exec"
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
@@ -27,22 +27,21 @@ func createSysctlConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(sysctlFilePath, data, sysctlFilePERM, "root:root")
+	if err = createFile(sysctlFilePath, data, sysctlFilePERM, "root:root"); err != nil {
+		return err
+	}
+
+	err = exec.Command("sysctl", "--system").Run()
+	return err
 }
 
 func createSysctlServiceData(cfg config.Instruction) ([]byte, error) {
-	extraArgs := make(map[string]string)
-	if cfg.Spec != nil {
-		args, ok := cfg.Spec.(map[any]any)
-		if !ok {
-			return nil, fmt.Errorf("args converting is not available")
-		}
-		for k, v := range args {
-			extraArgs[fmt.Sprint(k)] = fmt.Sprint(v)
-		}
+	eargs, err := getMap(cfg.Spec)
+	if err != nil {
+		return nil, err
 	}
 
 	sysctlServiceBuffer := new(bytes.Buffer)
-	err := sysctlConfigurationTemplate.Execute(sysctlServiceBuffer, extraArgs)
+	err = sysctlConfigurationTemplate.Execute(sysctlServiceBuffer, eargs)
 	return sysctlServiceBuffer.Bytes(), err
 }

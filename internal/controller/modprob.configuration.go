@@ -4,6 +4,7 @@ import (
 	"bytes"
 	_ "embed"
 	"fmt"
+	"os/exec"
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
@@ -22,27 +23,38 @@ const (
 
 // createModProbeConfiguration create k8s.conf file.
 func createModProbeConfiguration(cfg config.Instruction) error {
-	data, err := createModProbeConfigurationData(cfg)
+	var (
+		eargs []string
+		ok    bool
+	)
+	if cfg.Spec != nil {
+		eargs, ok = cfg.Spec.([]string)
+		if !ok {
+			return fmt.Errorf("args converting is not available")
+		}
+	}
+
+	data, err := createModProbeConfigurationData(eargs)
 	if err != nil {
 		return err
 	}
 
-	return createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, "root:root")
-}
-
-func createModProbeConfigurationData(cfg config.Instruction) ([]byte, error) {
-	var (
-		args []any
-		ok   bool
-	)
-	if cfg.Spec != nil {
-		args, ok = cfg.Spec.([]any)
-		if !ok {
-			return nil, fmt.Errorf("args converting is not available")
-		}
+	err = createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, "root:root")
+	if err != nil {
+		return err
 	}
 
+	for _, a := range eargs {
+		err = exec.Command("modprobe", a).Run()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func createModProbeConfigurationData(eargs []string) ([]byte, error) {
 	k8sConfigurationServiceBuffer := new(bytes.Buffer)
-	err := k8sConfigurationTemplate.Execute(k8sConfigurationServiceBuffer, args)
+	err := k8sConfigurationTemplate.Execute(k8sConfigurationServiceBuffer, eargs)
 	return k8sConfigurationServiceBuffer.Bytes(), err
 }
