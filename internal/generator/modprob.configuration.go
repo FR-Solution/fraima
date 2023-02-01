@@ -1,4 +1,4 @@
-package controller
+package generator
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/utils"
 )
 
 var (
@@ -39,7 +40,7 @@ func createModProbeConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	err = createFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, "root:root")
+	err = utils.CreateFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, "root:root")
 	if err != nil {
 		return err
 	}

@@ -1,4 +1,4 @@
-package controller
+package generator
 
 import (
 	_ "embed"
@@ -6,6 +6,7 @@ import (
 	"github.com/pelletier/go-toml"
 
 	"github.com/fraima/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/utils"
 )
 
 const (
@@ -20,7 +21,7 @@ func createContainerdConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	return createFile(containerdConfigurationFilePath, data, containerdConfigurationFilePERM, "root:root")
+	return utils.CreateFile(containerdConfigurationFilePath, data, containerdConfigurationFilePERM, "root:root")
 }
 
 func createContainerdConfigurationData(cfg config.Instruction) ([]byte, error) {

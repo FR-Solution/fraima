@@ -1,4 +1,4 @@
-package controller
+package generator
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/utils"
 )
 
 var (
@@ -27,7 +28,7 @@ func createKubletService(cfg config.Instruction) error {
 		return err
 	}
 
-	err = createFile(kubeletServiceFilePath, data, kubeletServiceFilePERM, "root:root")
+	err = utils.CreateFile(kubeletServiceFilePath, data, kubeletServiceFilePERM, "root:root")
 	if err != nil {
 		return err
 	}

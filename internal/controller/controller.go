@@ -1,33 +1,34 @@
 package controller
 
-import (
-	"go.uber.org/zap"
+import "github.com/fraima/fraimactl/internal/config"
 
-	"github.com/fraima/fraimactl/internal/config"
-)
-
-var kindCreator map[string]func(config.Instruction) error = map[string]func(config.Instruction) error{
-	"KubeletService":          createKubletService,
-	"KubeletConfiguration":    createKubletConfiguration,
-	"ContainerdService":       createContainerdService,
-	"ContainerdConfiguration": createContainerdConfiguration,
-	"SysctlConfiguration":     createSysctlConfiguration,
-	"ModProbeConfiguration":   createModProbeConfiguration,
-	"DownloadConfiguration":   downloading,
+type generator interface {
+	Run(kind string, instruction GenerateInstruction) error
 }
 
-func Run(instructions []config.Instruction, skippingPhases []string) {
-	for _, i := range instructions {
-		handler, isExist := kindCreator[i.Kind]
-		if !isExist {
-			zap.L().Warn("unknown kind", zap.String("kind", i.Kind))
-			continue
-		}
-		err := handler(i)
-		if err != nil {
-			zap.L().Error(i.Kind, zap.String("api_version", i.APIVersion), zap.Error(err))
-			continue
-		}
-		zap.L().Info(i.Kind, zap.String("api_version", i.APIVersion))
+type downloader interface {
+	Run(kind string, instruction DownloadInstruction) error
+}
+
+type controller struct {
+	generator  generator
+	downloader downloader
+}
+
+func New(
+	generator generator,
+	downloader downloader,
+) *controller {
+	return &controller{
+		generator:  generator,
+		downloader: downloader,
 	}
 }
+
+func (s *controller) Run(instructions []config.Instruction) {
+
+}
+
+func (s *controller) phasesSplit(instructions []config.Instruction) []any
+
+func (s *controller) getPhaseName() (string, error)

@@ -1,4 +1,4 @@
-package controller
+package generator
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/utils"
 )
 
 var (
@@ -27,7 +28,7 @@ func createSysctlConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	if err = createFile(sysctlFilePath, data, sysctlFilePERM, "root:root"); err != nil {
+	if err = utils.CreateFile(sysctlFilePath, data, sysctlFilePERM, "root:root"); err != nil {
 		return err
 	}
 
