@@ -3,11 +3,9 @@ package generator
 import (
 	"bytes"
 	_ "embed"
-	"fmt"
 	"os/exec"
 	"text/template"
 
-	"github.com/fraima/fraimactl/internal/config"
 	"github.com/fraima/fraimactl/internal/utils"
 )
 
@@ -18,21 +16,16 @@ var (
 )
 
 const (
-	k8sConfigurationServiceFilePath = "/etc/modules-load.d/k8s.conf"
-	k8sConfigurationServiceFilePERM = 0644
+	k8sConfigurationServiceFilePath  = "/etc/modules-load.d/k8s.conf"
+	k8sConfigurationServiceFilePERM  = 0644
+	k8sConfigurationServiceFileOwner = "root:root"
 )
 
 // createModProbeConfiguration create k8s.conf file.
-func createModProbeConfiguration(cfg config.Instruction) error {
-	var (
-		eargs []string
-		ok    bool
-	)
-	if cfg.Spec != nil {
-		eargs, ok = cfg.Spec.([]string)
-		if !ok {
-			return fmt.Errorf("args converting is not available")
-		}
+func createModProbeConfiguration(extraArgs any) error {
+	eargs, ok := extraArgs.([]string)
+	if !ok {
+		return errArgsUnavailable
 	}
 
 	data, err := createModProbeConfigurationData(eargs)
@@ -40,7 +33,7 @@ func createModProbeConfiguration(cfg config.Instruction) error {
 		return err
 	}
 
-	err = utils.CreateFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, "root:root")
+	err = utils.CreateFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, k8sConfigurationServiceFileOwner)
 	if err != nil {
 		return err
 	}

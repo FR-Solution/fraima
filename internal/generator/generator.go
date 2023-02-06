@@ -1,34 +1,45 @@
 package generator
 
 import (
+	"strings"
+
 	"github.com/fraima/fraimactl/internal/config"
 )
 
 type generator struct {
-	kindHandler map[string]func(config.Instruction) error
+	kindHandlers map[string]map[string]func(apiVersion string, instruction config.Instruction) error
 }
 
 func New() *generator {
 	return &generator{
-		kindHandler: map[string]func(config.Instruction) error{
-			"KubeletService":          createKubletService,
-			"KubeletConfiguration":    createKubletConfiguration,
-			"ContainerdService":       createContainerdService,
-			"ContainerdConfiguration": createContainerdConfiguration,
-			"SysctlConfiguration":     createSysctlConfiguration,
-			"ModProbeConfiguration":   createModProbeConfiguration,
+		kindHandlers: map[string]map[string]func(apiVersion string, instruction config.Instruction) error{
+			"kubelet": {
+				"service":       createKubeletService,
+				"configuration": createKubeletConfiguration,
+			},
+			"containerd": {
+				"service":       createContainerdService,
+				"configuration": createContainerdConfiguration,
+			},
+			"sysctl": {
+				"configuration": createSysctlConfiguration,
+			},
+			"modprob": {
+				"configuration": createModProbeConfiguration,
+			},
 		},
 	}
 }
 
-func (s *generator) Run(instruction config.Instruction) error {
-	handler, isExist := s.kindHandler[instruction.Kind]
+func (s *generator) Run(apiVersion, fileType string, instruction config.Instruction) error {
+	handlers, isExist := s.kindHandlers[strings.ToLower(instruction.Kind)]
 	if !isExist {
 		return errUnknownKind
 	}
-	err := handler(instruction)
-	if err != nil {
-		return err
+	handler, isExist := handlers[fileType]
+	if !isExist {
+		return errUnknownFileType
 	}
-	return nil
+
+	return handler(instruction)
 }

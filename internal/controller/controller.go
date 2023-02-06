@@ -11,11 +11,11 @@ import (
 )
 
 type generator interface {
-	Run(kind, fileType string, extraArgs any) error
+	Run(metadata config.Metadata, fileType string, extraArgs any) error
 }
 
 type downloader interface {
-	Run(instructions []config.DownloadInstruction) error
+	Run(instruction config.DownloadInstruction) error
 }
 
 var (
@@ -55,26 +55,31 @@ func (s *controller) Run(instructions []config.Instruction, skippingPhases map[s
 			wg := &sync.WaitGroup{}
 
 			wg.Add(3)
-			go s.generation(wg, i.Kind, configurationFileType, i.Spec.Configuration.ExtraArgs)
-			go s.generation(wg, i.Kind, configurationFileType, i.Spec.Service.ExtraArgs)
+			if i.Spec.Service != nil {
+				go s.generation(wg, i.Metadata, configurationFileType, i.Spec.Service.ExtraArgs)
+			}
+			if i.Spec.Configuration != nil {
+				go s.generation(wg, i.Metadata, configurationFileType, i.Spec.Configuration.ExtraArgs)
+			}
 			go s.downloading(wg, i.Kind, i.Spec.Download)
-
 			wg.Wait()
 		}(i)
 	}
 }
 
-func (s *controller) generation(wg *sync.WaitGroup, kind, fileType string, extraArgs any) {
+func (s *controller) generation(wg *sync.WaitGroup, metadata config.Metadata, fileType string, extraArgs any) {
 	defer wg.Done()
-	if err := s.generator.Run(kind, fileType, extraArgs); err != nil {
-		zap.L().Error("generation", zap.String("kind", kind), zap.String("type", fileType), zap.Error(err))
+	if err := s.generator.Run(metadata, fileType, extraArgs); err != nil {
+		zap.L().Error("generation", zap.Any("metadata", metadata), zap.String("type", fileType), zap.Error(err))
 	}
 }
 
 func (s *controller) downloading(wg *sync.WaitGroup, kind string, instructions []config.DownloadInstruction) {
 	defer wg.Done()
-	if err := s.downloader.Run(instructions); err != nil {
-		zap.L().Error("downloading", zap.String("kind", kind), zap.Error(err))
+	for _, instruction := range instructions {
+		if err := s.downloader.Run(instruction); err != nil {
+			zap.L().Error("downloading", zap.String("kind", kind), zap.Any("instruction", instruction), zap.Error(err))
+		}
 	}
 }
 

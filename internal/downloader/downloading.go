@@ -7,7 +7,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/fraima/fraimactl/internal/controller"
+	"github.com/fraima/fraimactl/internal/config"
 	"github.com/fraima/fraimactl/internal/utils"
 )
 
@@ -21,7 +21,7 @@ func New() *downloader {
 	}
 }
 
-func (s *downloader) Run(instruction controller.DownloadInstruction) error {
+func (s *downloader) Run(instruction config.DownloadInstruction) error {
 	file, err := s.download(instruction.Src)
 	if err != nil {
 		return err

@@ -1,14 +1,18 @@
 package config
 
 type Instruction struct {
+	Metadata `yaml:",inline"`
+	Spec     Spec `yaml:"spec"`
+}
+
+type Metadata struct {
 	APIVersion string `yaml:"apiVersion"`
 	Kind       string `yaml:"kind"`
-	Spec       Spec   `yaml:"spec"`
 }
 
 type Spec struct {
-	Configuration Config                `yaml:"configuration"`
-	Service       Config                `yaml:"service"`
+	Service       *Config               `yaml:"service,omitempty"`
+	Configuration *Config               `yaml:"configuration,omitempty"`
 	Download      []DownloadInstruction `yaml:"download"`
 	Starting      []string              `yaml:"starting"`
 }

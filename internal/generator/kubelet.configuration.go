@@ -13,7 +13,7 @@ const (
 	kubeletConfigurationFilePERM = 0644
 )
 
-func createKubletConfiguration(cfg config.Instruction) error {
+func createKubeletConfiguration(extraArgs any) error {
 	data, err := getKubeletConfigurationData(cfg.APIVersion, cfg.Spec)
 	if err != nil {
 		return err
