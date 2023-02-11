@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"text/template"
 
+	"github.com/fraima/fraimactl/internal/config"
 	"github.com/fraima/fraimactl/internal/utils"
 )
 
@@ -21,8 +22,8 @@ const (
 )
 
 // createSysctlNetworkConfiguration create Sysctl.service file.
-func createSysctlConfiguration(extraArgs any) error {
-	data, err := createSysctlServiceData(extraArgs)
+func createSysctlConfiguration(i config.Instruction) error {
+	data, err := createSysctlServiceData(i)
 	if err != nil {
 		return err
 	}
@@ -35,8 +36,8 @@ func createSysctlConfiguration(extraArgs any) error {
 	return err
 }
 
-func createSysctlServiceData(extraArgs any) ([]byte, error) {
-	eargs, err := getMap(extraArgs)
+func createSysctlServiceData(i config.Instruction) ([]byte, error) {
+	eargs, err := getMap(i.Spec.Service.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}

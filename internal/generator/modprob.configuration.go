@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"text/template"
 
+	"github.com/fraima/fraimactl/internal/config"
 	"github.com/fraima/fraimactl/internal/utils"
 )
 
@@ -22,8 +23,8 @@ const (
 )
 
 // createModProbeConfiguration create k8s.conf file.
-func createModProbeConfiguration(extraArgs any) error {
-	eargs, ok := extraArgs.([]string)
+func createModProbeConfiguration(i config.Instruction) error {
+	eargs, ok := i.Spec.Configuration.ExtraArgs.([]string)
 	if !ok {
 		return errArgsUnavailable
 	}

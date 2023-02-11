@@ -22,8 +22,8 @@ const (
 )
 
 // createContainerdService create containerd.service file.
-func createContainerdService(cfg config.Instruction) error {
-	data, err := createContainerdServiceData(cfg.Spec)
+func createContainerdService(i config.Instruction) error {
+	data, err := createContainerdServiceData(i.Spec)
 	if err != nil {
 		return err
 	}

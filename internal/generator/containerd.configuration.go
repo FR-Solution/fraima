@@ -1,9 +1,13 @@
 package generator
 
 import (
+	"bytes"
 	_ "embed"
+	"regexp"
 
-	"github.com/pelletier/go-toml"
+	containerd "github.com/containerd/containerd/services/server/config"
+	"github.com/irbgeo/go-structure"
+	"github.com/pelletier/go-toml/v2"
 
 	"github.com/fraima/fraimactl/internal/config"
 	"github.com/fraima/fraimactl/internal/utils"
@@ -15,8 +19,8 @@ const (
 )
 
 // createContainerdConfiguration create containerd.service file.
-func createContainerdConfiguration(cfg config.Instruction) error {
-	data, err := createContainerdConfigurationData(cfg)
+func createContainerdConfiguration(i config.Instruction) error {
+	data, err := createContainerdConfigurationData(i)
 	if err != nil {
 		return err
 	}
@@ -35,36 +39,31 @@ func createContainerdConfigurationData(cfg config.Instruction) ([]byte, error) {
 		return nil, err
 	}
 
-	// TODO:
-	// for "github.com/pelletier/go-toml/v2"
-	// When will https://github.com/pelletier/go-toml/issues/836 close
+	cc, err := structure.New(new(containerd.Config))
+	if err != nil {
+		return nil, err
+	}
 
-	// cc, err := structure.New(new(containerd.Config))
-	// if err != nil {
-	// 	return nil, err
-	// }
+	cc.ChangeTags(getContainerdTag)
 
-	// cc.AddTags(getContainerdTag)
+	err = toml.Unmarshal(tomlData, cc.Struct())
+	if err != nil {
+		return nil, err
+	}
 
-	// err = toml.Unmarshal(tomlData, cc.Struct())
-	// if err != nil {
-	// 	return nil, err
-	// }
+	buf := new(bytes.Buffer)
+	e := toml.NewEncoder(buf)
+	e.SetIndentTables(true)
+	err = e.Encode(cc)
 
-	// return toml.Marshal(cc.Struct())
-
-	return tomlData, err
+	return buf.Bytes(), err
 }
 
-// TODO:
-// for "github.com/pelletier/go-toml/v2"
-// When will https://github.com/pelletier/go-toml/issues/836 close
+var regexpContainerdTag = regexp.MustCompile(`"$`)
 
-// var regexpContainerdTag = regexp.MustCompile(`"$`)
-
-// func getContainerdTag(fieldName, fieldTag string) string {
-// 	if fieldTag != "" {
-// 		fieldTag = regexpContainerdTag.ReplaceAllString(fieldTag, `,omitempty"`)
-// 	}
-// 	return fieldTag
-// }
+func getContainerdTag(fieldName, fieldTag, _ string) string {
+	if fieldTag != "" {
+		fieldTag = regexpContainerdTag.ReplaceAllString(fieldTag, `,omitempty"`)
+	}
+	return fieldTag
+}

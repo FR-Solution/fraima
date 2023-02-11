@@ -13,8 +13,8 @@ const (
 	kubeletConfigurationFilePERM = 0644
 )
 
-func createKubeletConfiguration(extraArgs any) error {
-	data, err := getKubeletConfigurationData(cfg.APIVersion, cfg.Spec)
+func createKubeletConfiguration(i config.Instruction) error {
+	data, err := getKubeletConfigurationData(i)
 	if err != nil {
 		return err
 	}
@@ -22,8 +22,8 @@ func createKubeletConfiguration(extraArgs any) error {
 	return utils.CreateFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM, "root:root")
 }
 
-func getKubeletConfigurationData(apiVersion string, spec any) ([]byte, error) {
-	eargs, err := getMap(spec)
+func getKubeletConfigurationData(i config.Instruction) ([]byte, error) {
+	eargs, err := getMap(i.Spec.Configuration.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func getKubeletConfigurationData(apiVersion string, spec any) ([]byte, error) {
 		return nil, err
 	}
 
-	cfg.APIVersion = apiVersion
+	cfg.APIVersion = i.APIVersion
 	cfg.Kind = "KubeletConfiguration"
 
 	data, err := yaml.Marshal(cfg)

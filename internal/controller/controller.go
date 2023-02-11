@@ -11,7 +11,7 @@ import (
 )
 
 type generator interface {
-	Run(metadata config.Metadata, fileType string, extraArgs any) error
+	Run(fileType string, instruction config.Instruction) error
 }
 
 type downloader interface {
@@ -56,10 +56,10 @@ func (s *controller) Run(instructions []config.Instruction, skippingPhases map[s
 
 			wg.Add(3)
 			if i.Spec.Service != nil {
-				go s.generation(wg, i.Metadata, configurationFileType, i.Spec.Service.ExtraArgs)
+				go s.generation(wg, configurationFileType, i)
 			}
 			if i.Spec.Configuration != nil {
-				go s.generation(wg, i.Metadata, configurationFileType, i.Spec.Configuration.ExtraArgs)
+				go s.generation(wg, configurationFileType, i)
 			}
 			go s.downloading(wg, i.Kind, i.Spec.Download)
 			wg.Wait()
@@ -67,10 +67,10 @@ func (s *controller) Run(instructions []config.Instruction, skippingPhases map[s
 	}
 }
 
-func (s *controller) generation(wg *sync.WaitGroup, metadata config.Metadata, fileType string, extraArgs any) {
+func (s *controller) generation(wg *sync.WaitGroup, fileType string, instruction config.Instruction) {
 	defer wg.Done()
-	if err := s.generator.Run(metadata, fileType, extraArgs); err != nil {
-		zap.L().Error("generation", zap.Any("metadata", metadata), zap.String("type", fileType), zap.Error(err))
+	if err := s.generator.Run(fileType, instruction); err != nil {
+		zap.L().Error("generation", zap.Any("metadata", instruction), zap.String("type", fileType), zap.Error(err))
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"text/template"
 
+	"github.com/fraima/fraimactl/internal/config"
 	"github.com/fraima/fraimactl/internal/utils"
 )
 
@@ -22,8 +23,8 @@ const (
 )
 
 // createKubletService create kubelet.service file.
-func createKubeletService(apiVersion string, extraArgs any) error {
-	data, err := createKubleteServiceData(extraArgs)
+func createKubeletService(i config.Instruction) error {
+	data, err := createKubleteServiceData(i)
 	if err != nil {
 		return err
 	}
@@ -37,8 +38,8 @@ func createKubeletService(apiVersion string, extraArgs any) error {
 	return err
 }
 
-func createKubleteServiceData(extraArgs any) ([]byte, error) {
-	eargs, err := getMap(extraArgs)
+func createKubleteServiceData(i config.Instruction) ([]byte, error) {
+	eargs, err := getMap(i.Spec.Service.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}
