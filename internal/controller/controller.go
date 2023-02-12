@@ -76,20 +76,22 @@ func (s *controller) Run(instructions []config.Instruction, skippingPhases map[s
 
 func (s *controller) generation(wg *sync.WaitGroup, fileType string, instruction config.Instruction) {
 	defer wg.Done()
+	zap.L().Info("start_generation", zap.Any("apiVersion", instruction.Metadata.APIVersion), zap.Any("kind", instruction.Metadata.Kind), zap.String("type", fileType))
 	if err := s.generator.Run(fileType, instruction); err != nil {
 		zap.L().Error("generation", zap.Any("apiVersion", instruction.Metadata.APIVersion), zap.Any("kind", instruction.Metadata.Kind), zap.String("type", fileType), zap.Error(err))
 		return
 	}
-	zap.L().Info("generation", zap.Any("apiVersion", instruction.Metadata.APIVersion), zap.Any("kind", instruction.Metadata.Kind), zap.String("type", fileType))
+	zap.L().Info("finish_generation", zap.Any("apiVersion", instruction.Metadata.APIVersion), zap.Any("kind", instruction.Metadata.Kind), zap.String("type", fileType))
 }
 
 func (s *controller) downloading(wg *sync.WaitGroup, meta config.Metadata, instructions []config.DownloadInstruction) {
 	defer wg.Done()
 	for _, instruction := range instructions {
+		zap.L().Info("start_downloading", zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction))
 		if err := s.downloader.Run(instruction); err != nil {
 			zap.L().Error("downloading", zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction), zap.Error(err))
 		}
-		zap.L().Info("downloading", zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction))
+		zap.L().Info("finish_downloading", zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction))
 	}
 }
 
