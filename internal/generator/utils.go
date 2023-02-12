@@ -6,7 +6,7 @@ import (
 
 func getMap(i any) (map[string]any, error) {
 	if i == nil {
-		return nil, errArgsIsNil
+		return nil, nil
 	}
 	args, ok := i.(map[any]any)
 	if !ok {

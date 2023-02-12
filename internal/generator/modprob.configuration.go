@@ -3,7 +3,6 @@ package generator
 import (
 	"bytes"
 	_ "embed"
-	"os/exec"
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
@@ -24,12 +23,7 @@ const (
 
 // createModProbeConfiguration create k8s.conf file.
 func createModProbeConfiguration(i config.Instruction) error {
-	eargs, ok := i.Spec.Configuration.ExtraArgs.([]string)
-	if !ok {
-		return errArgsUnavailable
-	}
-
-	data, err := createModProbeConfigurationData(eargs)
+	data, err := createModProbeConfigurationData(i.Spec.Configuration)
 	if err != nil {
 		return err
 	}
@@ -39,16 +33,15 @@ func createModProbeConfiguration(i config.Instruction) error {
 		return err
 	}
 
-	for _, a := range eargs {
-		err = exec.Command("modprobe", a).Run()
-		if err != nil {
-			return err
-		}
-	}
 	return nil
 }
 
-func createModProbeConfigurationData(eargs []string) ([]byte, error) {
+func createModProbeConfigurationData(cfg *config.Config) ([]byte, error) {
+	eargs, ok := cfg.ExtraArgs.([]any)
+	if !ok {
+		return nil, errArgsUnavailable
+	}
+
 	k8sConfigurationServiceBuffer := new(bytes.Buffer)
 	err := k8sConfigurationTemplate.Execute(k8sConfigurationServiceBuffer, eargs)
 	return k8sConfigurationServiceBuffer.Bytes(), err
