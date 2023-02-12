@@ -13,7 +13,7 @@ type Metadata struct {
 type Spec struct {
 	Service       *Config               `yaml:"service,omitempty"`
 	Configuration *Config               `yaml:"configuration,omitempty"`
-	Download      []DownloadInstruction `yaml:"download"`
+	Download      []DownloadInstruction `yaml:"downloading"`
 	Starting      []string              `yaml:"starting"`
 }
 

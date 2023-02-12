@@ -20,7 +20,7 @@ const (
 
 // createContainerdConfiguration create containerd.service file.
 func createContainerdConfiguration(i config.Instruction) error {
-	data, err := createContainerdConfigurationData(i)
+	data, err := createContainerdConfigurationData(i.Spec.Configuration)
 	if err != nil {
 		return err
 	}
@@ -28,8 +28,8 @@ func createContainerdConfiguration(i config.Instruction) error {
 	return utils.CreateFile(containerdConfigurationFilePath, data, containerdConfigurationFilePERM, "root:root")
 }
 
-func createContainerdConfigurationData(cfg config.Instruction) ([]byte, error) {
-	eargs, err := getMap(cfg.Spec)
+func createContainerdConfigurationData(cfg *config.Config) ([]byte, error) {
+	eargs, err := getMap(cfg.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}

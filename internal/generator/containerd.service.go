@@ -23,7 +23,7 @@ const (
 
 // createContainerdService create containerd.service file.
 func createContainerdService(i config.Instruction) error {
-	data, err := createContainerdServiceData(i.Spec)
+	data, err := createContainerdServiceData(i.Spec.Service)
 	if err != nil {
 		return err
 	}
@@ -32,13 +32,11 @@ func createContainerdService(i config.Instruction) error {
 	if err != nil {
 		return err
 	}
-
-	err = startService(containerdServiceName)
 	return err
 }
 
-func createContainerdServiceData(spec any) ([]byte, error) {
-	eargs, err := getMap(spec)
+func createContainerdServiceData(cfg *config.Config) ([]byte, error) {
+	eargs, err := getMap(cfg.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}

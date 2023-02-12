@@ -46,39 +46,46 @@ func New(
 }
 
 func (s *controller) Run(instructions []config.Instruction, skippingPhases map[string]struct{}) {
+	wgRun := &sync.WaitGroup{}
 	for _, i := range instructions {
-		if _, isSkipping := skippingPhases[strings.ToLower(i.Kind)]; isSkipping {
+		if _, isSkipping := skippingPhases[getPhaseName(i.Kind)]; isSkipping {
 			continue
 		}
 
+		wgRun.Add(1)
 		go func(i config.Instruction) {
+			defer wgRun.Done()
+
 			wg := &sync.WaitGroup{}
 
 			wg.Add(3)
 			if i.Spec.Service != nil {
-				go s.generation(wg, configurationFileType, i)
+				go s.generation(wg, serviceFileType, i)
 			}
 			if i.Spec.Configuration != nil {
 				go s.generation(wg, configurationFileType, i)
 			}
-			go s.downloading(wg, i.Kind, i.Spec.Download)
+			go s.downloading(wg, i.Metadata, i.Spec.Download)
 			wg.Wait()
+
+			s.starting(i.Kind, i.Spec.Starting)
 		}(i)
 	}
+	wgRun.Wait()
 }
 
 func (s *controller) generation(wg *sync.WaitGroup, fileType string, instruction config.Instruction) {
 	defer wg.Done()
 	if err := s.generator.Run(fileType, instruction); err != nil {
-		zap.L().Error("generation", zap.Any("metadata", instruction), zap.String("type", fileType), zap.Error(err))
+		zap.L().Error("generation", zap.Any("apiVersion", instruction.Metadata.APIVersion), zap.Any("kind", instruction.Metadata.Kind), zap.String("type", fileType), zap.Error(err))
 	}
 }
 
-func (s *controller) downloading(wg *sync.WaitGroup, kind string, instructions []config.DownloadInstruction) {
+func (s *controller) downloading(wg *sync.WaitGroup, meta config.Metadata, instructions []config.DownloadInstruction) {
 	defer wg.Done()
 	for _, instruction := range instructions {
 		if err := s.downloader.Run(instruction); err != nil {
-			zap.L().Error("downloading", zap.String("kind", kind), zap.Any("instruction", instruction), zap.Error(err))
+			zap.L().Error("downloading", zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction), zap.Error(err))
 		}
 	}
 }
@@ -98,4 +105,13 @@ func (s *controller) starting(kind string, instructions []string) error {
 		}
 	}
 	return nil
+}
+
+func getPhaseName(kind string) string {
+	for _, n := range phaseNames {
+		if strings.Contains(strings.ToLower(kind), n) {
+			return n
+		}
+	}
+	return ""
 }

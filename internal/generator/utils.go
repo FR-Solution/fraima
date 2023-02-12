@@ -2,19 +2,22 @@ package generator
 
 import (
 	"fmt"
-	"os/exec"
 )
 
 func getMap(i any) (map[string]any, error) {
-	rArgs := make(map[string]any)
-	err := fmt.Errorf("args converting is not available")
+	if i == nil {
+		return nil, errArgsIsNil
+	}
 	args, ok := i.(map[any]any)
 	if !ok {
-		return rArgs, err
+		return nil, errArgsUnavailable
 	}
+
+	rArgs := make(map[string]any)
 	for k, v := range args {
 		key := fmt.Sprint(k)
 		if nArgs, ok := v.(map[any]any); ok {
+			var err error
 			rArgs[key], err = getMap(nArgs)
 			if err != nil {
 				return rArgs, err
@@ -25,20 +28,4 @@ func getMap(i any) (map[string]any, error) {
 		rArgs[key] = v
 	}
 	return rArgs, nil
-}
-
-func startService(name string) error {
-	err := exec.Command("systemctl", "enable", fmt.Sprintf("%s.service", name)).Run()
-	if err != nil {
-		return err
-	}
-	err = exec.Command("systemctl", "start", fmt.Sprintf("%s.service", name)).Run()
-	if err != nil {
-		return err
-	}
-	err = exec.Command("systemctl", "daemon-reload").Run()
-	if err != nil {
-		return err
-	}
-	return nil
 }

@@ -24,7 +24,7 @@ const (
 
 // createKubletService create kubelet.service file.
 func createKubeletService(i config.Instruction) error {
-	data, err := createKubleteServiceData(i)
+	data, err := createKubleteServiceData(i.Spec.Service)
 	if err != nil {
 		return err
 	}
@@ -34,12 +34,11 @@ func createKubeletService(i config.Instruction) error {
 		return err
 	}
 
-	err = startService(kubeletServiceName)
 	return err
 }
 
-func createKubleteServiceData(i config.Instruction) ([]byte, error) {
-	eargs, err := getMap(i.Spec.Service.ExtraArgs)
+func createKubleteServiceData(cfg *config.Config) ([]byte, error) {
+	eargs, err := getMap(cfg.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}
