@@ -17,7 +17,7 @@ var (
 )
 
 const (
-	sysctlFilePath = "/etc/sysctl.d/99-fraima.conf"
+	sysctlFilePath = "/tmp/etc/sysctl.d/99-fraima.conf"
 	sysctlFilePERM = 0644
 )
 

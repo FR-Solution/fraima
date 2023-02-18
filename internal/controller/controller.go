@@ -53,23 +53,25 @@ func (s *controller) Run(instructions []config.Instruction, skippingPhases map[s
 		}
 
 		wgRun.Add(1)
-		go func(i config.Instruction) {
+		go func(wgRun *sync.WaitGroup, i config.Instruction) {
 			defer wgRun.Done()
 
 			wg := &sync.WaitGroup{}
 
-			wg.Add(3)
 			if i.Spec.Service != nil {
+				wg.Add(1)
 				go s.generation(wg, serviceFileType, i)
 			}
 			if i.Spec.Configuration != nil {
+				wg.Add(1)
 				go s.generation(wg, configurationFileType, i)
 			}
+			wg.Add(1)
 			go s.downloading(wg, i.Metadata, i.Spec.Download)
 			wg.Wait()
 
 			s.starting(i.Kind, i.Spec.Starting)
-		}(i)
+		}(wgRun, i)
 	}
 	wgRun.Wait()
 }

@@ -17,7 +17,7 @@ var (
 
 const (
 	kubeletServiceName      = "kubelet"
-	kubeletServiceFilePath  = "/etc/systemd/system/kubelet.service"
+	kubeletServiceFilePath  = "/tmp/etc/systemd/system/kubelet.service"
 	kubeletServiceFilePERM  = 0644
 	kubeletServiceFileOwner = "root:root"
 )
