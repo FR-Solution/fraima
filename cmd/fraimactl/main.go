@@ -8,6 +8,8 @@ import (
 
 	"github.com/fraima/fraimactl/internal/config"
 	"github.com/fraima/fraimactl/internal/controller"
+	"github.com/fraima/fraimactl/internal/downloader"
+	"github.com/fraima/fraimactl/internal/generator"
 )
 
 var (
@@ -34,18 +36,31 @@ func main() {
 		zap.L().Fatal("the path to the config file is not set")
 	}
 
-	skippingPhases := strings.Split(skipKindList, " ")
+	skippingPhasesList := strings.Split(skipKindList, " ")
+	skippingPhasesMap := make(map[string]struct{})
+	for _, p := range skippingPhasesList {
+		skippingPhasesMap[p] = struct{}{}
+	}
 
-	zap.L().Debug("configuration", zap.String("version", Version), zap.Strings("skipping phases", skippingPhases))
+	zap.L().Debug("configuration", zap.String("version", Version), zap.Strings("skipping phases", skippingPhasesList))
 
 	instructionList, err := config.GetInstructionList(configFile)
 	if err != nil {
 		zap.L().Fatal("read config", zap.Error(err))
 	}
 
+	generator := generator.New()
+
+	downloader := downloader.New()
+
+	cntl := controller.New(
+		generator,
+		downloader,
+	)
+
 	zap.L().Info("started")
 
-	controller.Run(instructionList, skippingPhases)
+	cntl.Run(instructionList, skippingPhasesMap)
 
 	zap.L().Info("goodbye")
 }

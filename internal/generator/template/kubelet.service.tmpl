@@ -8,11 +8,7 @@ After=network-online.target
 ExecStart=/usr/bin/kubelet
 {{- range $key, $value := . -}}
     {{ " " }}
-    {{- if eq $value "" -}}
-    --{{ $key }}
-    {{- else -}}
     --{{ $key }}={{ $value }} 
-    {{- end -}}
 {{- end }}
 Restart=always
 StartLimitInterval=0

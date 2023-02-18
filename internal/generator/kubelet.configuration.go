@@ -1,10 +1,11 @@
-package controller
+package generator
 
 import (
 	"k8s.io/kubelet/config/v1beta1"
 	"sigs.k8s.io/yaml"
 
 	"github.com/fraima/fraimactl/internal/config"
+	"github.com/fraima/fraimactl/internal/utils"
 )
 
 const (
@@ -12,17 +13,17 @@ const (
 	kubeletConfigurationFilePERM = 0644
 )
 
-func createKubletConfiguration(cfg config.Instruction) error {
-	data, err := getKubeletConfigurationData(cfg.APIVersion, cfg.Spec)
+func createKubeletConfiguration(i config.Instruction) error {
+	data, err := getKubeletConfigurationData(i)
 	if err != nil {
 		return err
 	}
 
-	return createFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM, "root:root")
+	return utils.CreateFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM, "root:root")
 }
 
-func getKubeletConfigurationData(apiVersion string, spec any) ([]byte, error) {
-	eargs, err := getMap(spec)
+func getKubeletConfigurationData(i config.Instruction) ([]byte, error) {
+	eargs, err := getMap(i.Spec.Configuration.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +39,7 @@ func getKubeletConfigurationData(apiVersion string, spec any) ([]byte, error) {
 		return nil, err
 	}
 
-	cfg.APIVersion = apiVersion
+	cfg.APIVersion = i.APIVersion
 	cfg.Kind = "KubeletConfiguration"
 
 	data, err := yaml.Marshal(cfg)

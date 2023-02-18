@@ -1,4 +1,4 @@
-package controller
+package utils
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func createFile(filepath string, data []byte, perm int, owner string) error {
+func CreateFile(filepath string, data []byte, perm int, owner string) error {
 	dir := path.Dir(filepath)
 	if err := os.MkdirAll(dir, fs.FileMode(perm)); err != nil {
 		return err
@@ -53,26 +53,4 @@ func createFile(filepath string, data []byte, perm int, owner string) error {
 
 	err = os.Chown(filepath, userUid, groupUid)
 	return err
-}
-
-func getMap(i any) (map[string]any, error) {
-	rArgs := make(map[string]any)
-	err := fmt.Errorf("args converting is not available")
-	args, ok := i.(map[any]any)
-	if !ok {
-		return rArgs, err
-	}
-	for k, v := range args {
-		key := fmt.Sprint(k)
-		if nArgs, ok := v.(map[any]any); ok {
-			rArgs[key], err = getMap(nArgs)
-			if err != nil {
-				return rArgs, err
-			}
-			continue
-		}
-
-		rArgs[key] = v
-	}
-	return rArgs, nil
 }
