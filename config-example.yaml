@@ -48,6 +48,7 @@
         owner: root:root
         permission: 0645
     starting:
+      - systemctl enable containerd
       - systemctl start containerd
 
 
@@ -102,6 +103,7 @@
         owner: root:root
         permission: 0645
     starting:
+      - systemctl enable kubelet
       - systemctl start kubelet
 
 - apiVersion: fraima.io/v1alpha
