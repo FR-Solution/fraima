@@ -1,3 +1,6 @@
 test/
 fraima*
 
+check.sh
+delete.sh
+log.debug
