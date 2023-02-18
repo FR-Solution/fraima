@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	containerdConfigurationFilePath = "/tmp/etc/kubernetes/containerd/config.toml"
+	containerdConfigurationFilePath = "/etc/kubernetes/containerd/config.toml"
 	containerdConfigurationFilePERM = 0644
 )
 

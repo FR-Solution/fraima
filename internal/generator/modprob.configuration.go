@@ -16,7 +16,7 @@ var (
 )
 
 const (
-	k8sConfigurationServiceFilePath  = "/tmp/etc/modules-load.d/k8s.conf"
+	k8sConfigurationServiceFilePath  = "/etc/modules-load.d/k8s.conf"
 	k8sConfigurationServiceFilePERM  = 0644
 	k8sConfigurationServiceFileOwner = "root:root"
 )

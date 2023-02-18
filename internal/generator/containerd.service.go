@@ -17,7 +17,7 @@ var (
 
 const (
 	containerdServiceName     = "containerd"
-	containerdServiceFilePath = "/tmp/etc/systemd/system/containerd.service"
+	containerdServiceFilePath = "/etc/systemd/system/containerd.service"
 	containerdServiceFilePERM = 0644
 )
 
