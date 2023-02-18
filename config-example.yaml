@@ -47,6 +47,9 @@
         path: /usr/bin/
         owner: root:root
         permission: 0645
+    starting:
+      - command1 arg11 
+      - command2 arg21
 
 - apiVersion: fraima.io/v1alpha
   kind: Kubelet
