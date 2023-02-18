@@ -1,35 +1,13 @@
 - apiVersion: fraima.io/v1alpha
   kind: Containerd
   spec:
-    service:
-      extraArgs:
-        # This document provides the description of the CRI plugin configuration.
-        # The CRI plugin config is part of the containerd config
-        # Default: /tmp/etc/containerd/config.toml
-        config: /tmp/tmp/etc/kubernetes/containerd/config.toml
-    configuration:
-      extraArgs:
-        version: 2
-        plugins:
-          io.containerd.grpc.v1.cri:
-            containerd:
-              runtimes:
-                runc:
-                  # Runtime v2 introduces a first class shim API for runtime authors to integrate with containerd.
-                  # The shim API is minimal and scoped to the execution lifecycle of a container.
-                  runtime_type: "io.containerd.runc.v2"
-                  options:
-                    # While containerd and Kubernetes use the legacy cgroupfs driver for managing cgroups by default,
-                    # it is recommended to use the systemd driver on systemd-based hosts for compliance of the "single-writer" rule of cgroups.
-                    # To configure containerd to use the systemd driver, set the following option:
-                    SystemdCgroup: true
     downloading:
       - name: cotainerd
         src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz
         checkSum:
           src: https://github.com/containerd/containerd/releases/download/v1.6.6/containerd-1.6.6-linux-amd64.tar.gz.sha256sum
           type: "sha256"
-        path: /tmp/tmp/usr/bin/
+        path:  /tmp/usr/bin/
         owner: root:root
         permission: 0645
         unzip:
@@ -44,51 +22,13 @@
 
       - name: runc
         src: https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
-        path: /tmp/tmp/usr/bin/
+        path:  /tmp/usr/bin/
         owner: root:root
         permission: 0645
 
 - apiVersion: fraima.io/v1alpha
   kind: Kubelet
   spec:
-    service:
-      extraArgs:
-        # Number for the log level verbosity
-        v: 2
-        # The directory where the TLS certs are located.
-        # If --tls-cert-file and --tls-private-key-file are provided, this flag will be ignored.
-        # Default: /tmp/var/lib/kubelet/pki
-        cert-dir: /tmp/etc/kubernetes/pki/certs/kubelet
-        # The Kubelet will load its initial configuration from this file.
-        # The path may be absolute or relative; relative paths start at the Kubelet's current working directory.
-        # Omit this flag to use the built-in default configuration values.
-        # Command-line flags override configuration from this file.
-        config: /tmp/etc/kubernetes/kubelet/config.yaml
-        # Path to a kubeconfig file, specifying how to connect to the API server.
-        # Providing --kubeconfig enables API server mode, omitting --kubeconfig enables standalone mode.
-        kubeconfig: /tmp/etc/kubernetes/kubelet/kubeconfig
-        # Path to a kubeconfig file that will be used to get client certificate for kubelet.
-        # If the file specified by --kubeconfig does not exist,
-        # the bootstrap kubeconfig is used to request a client certificate from the API server.
-        # On success, a kubeconfig file referencing the generated client certificate and key is written to the path specified by --kubeconfig.
-        # The client certificate and key file will be stored in the directory pointed by --cert-dir.
-        bootstrap-kubeconfig: /tmp/etc/kubernetes/kubelet/bootstrap-kubeconfig
-        # The endpoint of remote runtime service. Unix Domain Sockets are supported on Linux,
-        # while npipe and tcp endpoints are supported on windows.
-        # Examples: unix:///path/to/runtime.sock, npipe:////./pipe/runtime.
-        container-runtime-endpoint: /tmp/run/containerd/containerd.sock
-        container-runtime: remote
-        # Specified image will not be pruned by the image garbage collector.
-        # When container-runtime is set to docker, all containers in each pod will use the network/IPC namespaces from this image.
-        # Other CRI implementations have their own configuration to set this image.
-        # Default: registry.k8s.io/pause:3.6
-        pod-infra-container-image: k8s.gcr.io/pause:3.6
-        # The provider for cloud services. Set to empty string for running with no cloud provider.
-        # If set, the cloud provider determines the name of the node (consult cloud provider documentation to determine
-        # if and how the hostname is used).
-        # (DEPRECATED: will be removed in 1.24 or later, in favor of removing cloud provider code from Kubelet.)
-        cloud-provider: external
-    # configuration: {}
     downloading:
       - name: kubelet
         src: https://dl.k8s.io/release/v1.23.12/bin/linux/amd64/kubelet
@@ -98,21 +38,6 @@
         path: /tmp/usr/bin/
         owner: root:root
         permission: 0645
-
-- apiVersion: fraima.io/v1alpha
-  kind: Sysctl
-  spec:
-    configuration:
-      extraArgs:
-        net.ipv4.ip_forward: 1
-
-- apiVersion: fraima.io/v1alpha
-  kind: Modprob
-  spec:
-    configuration:
-      extraArgs:
-        - br_netfilter
-        - overlay
 
 - apiVersion: fraima.io/v1alpha
   kind: Kubeadm

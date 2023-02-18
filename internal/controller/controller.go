@@ -92,6 +92,7 @@ func (s *controller) downloading(wg *sync.WaitGroup, meta config.Metadata, instr
 		zap.L().Info("downloading", zap.String("step", "start"), zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction))
 		if err := s.downloader.Run(instruction); err != nil {
 			zap.L().Error("downloading", zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction), zap.Error(err))
+			continue
 		}
 		zap.L().Info("downloading", zap.String("step", "finish"), zap.Any("apiVersion", meta.APIVersion), zap.String("kind", meta.Kind), zap.Any("instruction", instruction))
 	}
@@ -120,5 +121,5 @@ func getPhaseName(kind string) string {
 			return n
 		}
 	}
-	return ""
+	return "unknown"
 }
