@@ -7,8 +7,8 @@ After=network-online.target
 [Service]
 ExecStart=/usr/bin/kubelet
 {{- range $key, $value := . -}}
-    {{- " \\" }} 
-    --{{ $key }}={{ $value }} 
+{{- " \\" }}
+--{{ $key }}={{ $value }}
 {{- end }}
 Restart=always
 StartLimitInterval=0
