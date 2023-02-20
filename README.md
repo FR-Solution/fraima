@@ -15,3 +15,5 @@
     modprob
     sysctl
 ```
+
+go build -o fraimactl cmd/fraimactl/main.go
