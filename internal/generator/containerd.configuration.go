@@ -17,26 +17,6 @@ const (
 	containerdConfigurationFilePERM = 0644
 )
 
-var testCfg = &config.Config{
-	ExtraArgs: map[any]any{
-		"version": 2,
-		"plugins": map[any]any{
-			"io.containerd.grpc.v1.cri": map[any]any{
-				"containerd": map[any]any{
-					"runtimes": map[any]any{
-						"runc": map[any]any{
-							"runtime_type": "io.containerd.runc.v2",
-							"options": map[any]any{
-								"SystemdCgroup": true,
-							},
-						},
-					},
-				},
-			},
-		},
-	},
-}
-
 // createContainerdConfiguration create containerd.service file.
 func createContainerdConfiguration(i config.Instruction) error {
 	data, err := createContainerdConfigurationData(i.Spec.Configuration)

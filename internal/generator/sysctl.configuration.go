@@ -3,7 +3,6 @@ package generator
 import (
 	"bytes"
 	_ "embed"
-	"os/exec"
 	"text/template"
 
 	"github.com/fraima/fraimactl/internal/config"
@@ -32,8 +31,7 @@ func createSysctlConfiguration(i config.Instruction) error {
 		return err
 	}
 
-	err = exec.Command("sysctl", "--system").Run()
-	return err
+	return nil
 }
 
 func createSysctlConfigurationData(i config.Instruction) ([]byte, error) {

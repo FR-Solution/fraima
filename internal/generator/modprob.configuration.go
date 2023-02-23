@@ -28,8 +28,7 @@ func createModProbeConfiguration(i config.Instruction) error {
 		return err
 	}
 
-	err = utils.CreateFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, k8sConfigurationServiceFileOwner)
-	if err != nil {
+	if err = utils.CreateFile(k8sConfigurationServiceFilePath, data, k8sConfigurationServiceFilePERM, k8sConfigurationServiceFileOwner); err != nil {
 		return err
 	}
 
