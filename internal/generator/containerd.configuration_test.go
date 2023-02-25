@@ -3,8 +3,9 @@ package generator
 import (
 	"testing"
 
-	"github.com/fraima/fraimactl/internal/config"
 	"github.com/stretchr/testify/require"
+
+	"github.com/fraima/fraimactl/internal/config"
 )
 
 func TestContainerdConfigurationData(t *testing.T) {

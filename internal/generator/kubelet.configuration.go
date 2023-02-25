@@ -43,5 +43,6 @@ func getKubeletConfigurationData(i config.Instruction) ([]byte, error) {
 	cfg.Kind = "KubeletConfiguration"
 
 	data, err := yaml.Marshal(cfg)
+
 	return data, err
 }

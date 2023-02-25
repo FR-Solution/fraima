@@ -6,8 +6,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/fraima/fraimactl/internal/config"
 	"go.uber.org/zap"
+
+	"github.com/fraima/fraimactl/internal/config"
 )
 
 type generator interface {
@@ -19,7 +20,7 @@ type downloader interface {
 }
 
 var (
-	phaseNames []string = []string{
+	phaseNames = []string{
 		"containerd",
 		"kubelet",
 		"modprob",
@@ -70,7 +71,9 @@ func (s *controller) Run(instructions []config.Instruction, skippingPhases map[s
 			go s.downloading(wg, i.Metadata, i.Spec.Download)
 			wg.Wait()
 
-			s.starting(i.Kind, i.Spec.Starting)
+			if err := s.starting(i.Spec.Starting); err != nil {
+				zap.L().Error("starting", zap.Any("apiVersion", i.APIVersion), zap.Any("kind", i.Kind), zap.Error(err))
+			}
 		}(wgRun, i)
 	}
 	wgRun.Wait()
@@ -98,7 +101,7 @@ func (s *controller) downloading(wg *sync.WaitGroup, meta config.Metadata, instr
 	}
 }
 
-func (s *controller) starting(kind string, instructions []string) error {
+func (s *controller) starting(instructions []string) error {
 	for _, i := range instructions {
 		commands := strings.Split(i, " ")
 		var err error

@@ -15,10 +15,6 @@ build-and-push:
 	docker image push $(tag)
 	echo $(tag)
 
-formatting:
-	go fmt ./...
-	go install github.com/daixiang0/gci@latest	
-	gci write --skip-generated -s standard -s default -s "prefix($(module))" .
-
-linter:
-	docker run --rm -v $(pwd):/app -w /app golangci/golangci-lint:v1.49.0 golangci-lint run -v
+lint:
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	golangci-lint run --fix -v

@@ -8,6 +8,7 @@ func getMap(i any) (map[string]any, error) {
 	if i == nil {
 		return nil, nil
 	}
+
 	args, ok := i.(map[any]any)
 	if !ok {
 		return nil, errArgsUnavailable

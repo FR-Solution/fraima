@@ -1,11 +1,11 @@
 package generator
 
 import (
-	_ "embed"
 	"testing"
 
-	"github.com/fraima/fraimactl/internal/config"
 	"github.com/stretchr/testify/require"
+
+	"github.com/fraima/fraimactl/internal/config"
 )
 
 func TestCreateContainerdServiceData(t *testing.T) {

@@ -5,66 +5,11 @@ import (
 	"context"
 	"crypto/md5"
 	"crypto/sha256"
-	"fmt"
 	"os"
 	"path"
 
 	"github.com/codeclysm/extract/v3"
 )
-
-// func getDownloadList(spec any) ([]downloadItem, error) {
-// 	specItems, ok := spec.([]any)
-// 	if !ok {
-// 		return nil, fmt.Errorf("downloading spec must be array")
-// 	}
-// 	downloadList := make([]downloadItem, 0, len(specItems))
-// 	for _, item := range specItems {
-// 		di, err := getDownloadItem(item)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		downloadList = append(downloadList, di)
-// 	}
-// 	return downloadList, nil
-// }
-
-// func getDownloadItem(i any) (downloadItem, error) {
-// 	var item downloadItem
-// 	itemMap, err := getMap(i)
-// 	if err != nil {
-// 		return item, err
-// 	}
-
-// 	yamlData, err := yaml.Marshal(itemMap)
-// 	if err != nil {
-// 		return item, err
-// 	}
-
-// 	err = yaml.Unmarshal(yamlData, &item)
-// 	return item, err
-// }
-
-func getMap(i any) (map[string]any, error) {
-	rArgs := make(map[string]any)
-	err := fmt.Errorf("args converting is not available")
-	args, ok := i.(map[any]any)
-	if !ok {
-		return rArgs, err
-	}
-	for k, v := range args {
-		key := fmt.Sprint(k)
-		if nArgs, ok := v.(map[any]any); ok {
-			rArgs[key], err = getMap(nArgs)
-			if err != nil {
-				return rArgs, err
-			}
-			continue
-		}
-
-		rArgs[key] = v
-	}
-	return rArgs, nil
-}
 
 func check(file, fileCheckSum []byte, checkSumType string) bool {
 	switch checkSumType {

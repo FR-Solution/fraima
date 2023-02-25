@@ -23,7 +23,7 @@ func CreateFile(filepath string, data []byte, perm int, owner string) error {
 
 	ownerList := strings.Split(owner, ":")
 	if len(ownerList) != 2 {
-		err := fmt.Errorf("the owner <%s> is not correct, it must satisfy the mask '$userName:$groupName'", owner)
+		err = fmt.Errorf("the owner <%s> is not correct, it must satisfy the mask '$userName:$groupName'", owner)
 		return err
 	}
 
@@ -39,18 +39,18 @@ func CreateFile(filepath string, data []byte, perm int, owner string) error {
 		return err
 	}
 
-	userUid, err := strconv.Atoi(user.Uid)
+	userUID, err := strconv.Atoi(user.Uid)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return err
 	}
 
-	groupUid, err := strconv.Atoi(group.Gid)
+	groupUID, err := strconv.Atoi(group.Gid)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return err
 	}
 
-	err = os.Chown(filepath, userUid, groupUid)
+	err = os.Chown(filepath, userUID, groupUID)
 	return err
 }
