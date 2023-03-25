@@ -25,6 +25,13 @@ func getMap(i any) (map[string]any, error) {
 			}
 			continue
 		}
+		if nArgs, ok := v.([]any); ok {
+			values := make([]string, 0, len(nArgs))
+			for _, a := range nArgs {
+				values = append(values, fmt.Sprint(a))
+			}
+			rArgs[key] = values
+		}
 
 		rArgs[key] = v
 	}

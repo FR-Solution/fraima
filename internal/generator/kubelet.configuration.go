@@ -14,7 +14,7 @@ const (
 )
 
 func createKubeletConfiguration(i config.Instruction) error {
-	data, err := getKubeletConfigurationData(i)
+	data, err := getKubeletConfigurationData(i.Spec.Configuration)
 	if err != nil {
 		return err
 	}
@@ -22,8 +22,8 @@ func createKubeletConfiguration(i config.Instruction) error {
 	return utils.CreateFile(kubeletConfigurationFilePath, data, kubeletConfigurationFilePERM, "root:root")
 }
 
-func getKubeletConfigurationData(i config.Instruction) ([]byte, error) {
-	eargs, err := getMap(i.Spec.Configuration.ExtraArgs)
+func getKubeletConfigurationData(cfg *config.Config) ([]byte, error) {
+	eargs, err := getMap(cfg.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}
@@ -33,16 +33,13 @@ func getKubeletConfigurationData(i config.Instruction) ([]byte, error) {
 		return nil, err
 	}
 
-	cfg := new(v1beta1.KubeletConfiguration)
+	c := new(v1beta1.KubeletConfiguration)
 	err = yaml.Unmarshal(yamlData, cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	cfg.APIVersion = i.APIVersion
-	cfg.Kind = "KubeletConfiguration"
-
-	data, err := yaml.Marshal(cfg)
+	data, err := yaml.Marshal(c)
 
 	return data, err
 }
