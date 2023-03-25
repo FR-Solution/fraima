@@ -51,7 +51,7 @@
       - systemctl enable containerd
       - systemctl start containerd
 
-
+F
 - apiVersion: fraima.io/v1alpha
   kind: Kubelet
   spec:

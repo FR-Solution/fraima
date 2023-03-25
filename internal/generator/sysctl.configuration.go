@@ -22,7 +22,7 @@ const (
 
 // createSysctlNetworkConfiguration create Sysctl.service file.
 func createSysctlConfiguration(i config.Instruction) error {
-	data, err := createSysctlConfigurationData(i)
+	data, err := createSysctlConfigurationData(i.Spec.Configuration)
 	if err != nil {
 		return err
 	}
@@ -34,8 +34,8 @@ func createSysctlConfiguration(i config.Instruction) error {
 	return nil
 }
 
-func createSysctlConfigurationData(i config.Instruction) ([]byte, error) {
-	eargs, err := getMap(i.Spec.Configuration.ExtraArgs)
+func createSysctlConfigurationData(cfg *config.Config) ([]byte, error) {
+	eargs, err := getMap(cfg.ExtraArgs)
 	if err != nil {
 		return nil, err
 	}
