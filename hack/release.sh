@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-GOPATH="~/"
 PROJECT="github.com/fraima/fraima"
 VERSION=$(git describe --abbrev=0 --tag)
 
