@@ -4,3 +4,4 @@ fraima*
 check.sh
 delete.sh
 log.debug
+src/github.com/*
