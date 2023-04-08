@@ -17,7 +17,7 @@
 PROJECT="github.com/fraima/fraima"
 VERSION=$(git describe --abbrev=0 --tag)
 
-TOOLS_ROOT="src/$PROJECT"
+TOOLS_ROOT="$GOPATH/src/$PROJECT"
 OUTPUTDIR=$TOOLS_ROOT/_output/releases
 mkdir -p "$OUTPUTDIR"
 
