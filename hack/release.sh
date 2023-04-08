@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-PROJECT="github.com/fraima/fraimactl"
+GOPATH="~/"
+PROJECT="github.com/fraima/fraima"
 VERSION=$(git describe --abbrev=0 --tag)
 
 TOOLS_ROOT="src/$PROJECT"

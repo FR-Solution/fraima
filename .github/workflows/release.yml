@@ -31,21 +31,21 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          path: src/github.com/fraima/fraimactl
+          path: src/github.com/fraima/fraima
 
       - run: |
           make release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        working-directory: src/github.com/fraima/fraimactl
+        working-directory: src/github.com/fraima/fraima
 
       - uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts: src/github.com/fraima/fraimactl/_output/releases/*
-          bodyFile: src/github.com/fraima/fraimactl/release-notes.md
+          artifacts: src/github.com/fraima/fraima/_output/releases/*
+          bodyFile: src/github.com/fraima/fraima/release-notes.md
 
       - uses: actions/upload-artifact@v2
         with:
           name: build-artifacts
-          path: src/github.com/fraima/fraimactl/_output
+          path: src/github.com/fraima/fraima/_output
